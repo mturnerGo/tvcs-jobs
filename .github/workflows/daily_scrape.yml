@@ -1,0 +1,38 @@
+name: Daily TVCS Job Harvester
+
+on:
+  schedule:
+    - cron: '0 10 * * *' # Daily at 6:00 AM EST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run Harvester
+        run: |
+          python scraper.py
+
+      - name: Commit Fresh Data
+        run: |
+          git config --global user.name "TVCS Scraper Bot"
+          git config --global user.email "actions@github.com"
+          git add jobs_data.json all_categories_all_sources_jobs.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-harvest fresh jobs [skip ci]" && git push)

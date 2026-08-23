@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TVCS Qualifying Careers Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans" x-data="jobPortal()" x-init="loadJobs()">
+  <header class="bg-indigo-950 text-white sticky top-0 z-50 border-b border-indigo-900 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-indigo-400"></i> TVCS Qualifying Careers
+        </h1>
+        <p class="text-xs text-indigo-200">The Villages Charter School Admission Qualifying Employer Index</p>
+      </div>
+      <div class="text-xs text-indigo-300">
+        Live Database • <span class="text-emerald-400 font-semibold" x-text="jobs.length + ' Available Roles'"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-2 relative">
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Live Keyword Search</label>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+            <input type="text" x-model="searchQuery" placeholder="Search role, company, or area (e.g. Network, Project Manager, Comcast)..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Category Priority</label>
+          <select x-model="selectedCat" class="w-full py-2 px-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white">
+            <option value="ALL">All Categories (I - IV)</option>
+            <option value="CATEGORY I">Category I (Direct Villages / Top Priority)</option>
+            <option value="CATEGORY II">Category II (Direct Subcontractors)</option>
+            <option value="CATEGORY III">Category III (Commercial Tenants)</option>
+            <option value="CATEGORY IV">Category IV (Approved Vendors)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <template x-for="job in filteredJobs" :key="job.Job_Link + job.Job_Title">
+        <div class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold border"
+                :class="{
+                  'bg-emerald-50 text-emerald-800 border-emerald-300': job.Category.includes('I') && !job.Category.includes('II') && !job.Category.includes('IV'),
+                  'bg-blue-50 text-blue-800 border-blue-300': job.Category.includes('II'),
+                  'bg-purple-50 text-purple-800 border-purple-300': job.Category.includes('III'),
+                  'bg-slate-50 text-slate-700 border-slate-300': job.Category.includes('IV')
+                }"
+                x-text="job.Category"
+              ></span>
+              <span class="text-[11px] text-slate-400 font-medium" x-text="job.Source || 'Direct Portal'"></span>
+            </div>
+            <h2 class="text-base font-bold text-slate-900 line-clamp-2" x-text="job.Job_Title"></h2>
+            <p class="text-sm font-semibold text-slate-700 mt-1 flex items-center">
+              <i class="fa-regular fa-building text-slate-400 mr-2 text-xs"></i>
+              <span x-text="job.Company"></span>
+            </p>
+            <p class="text-xs text-slate-500 mt-1 flex items-center">
+              <i class="fa-solid fa-location-dot text-slate-400 mr-2 text-xs"></i>
+              <span x-text="job.Location"></span>
+            </p>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-slate-100 flex flex-col gap-3">
+            <div class="text-xs font-semibold text-emerald-700 flex items-center">
+              <i class="fa-solid fa-wallet mr-1.5"></i>
+              <span x-text="job.Estimated_Salary"></span>
+            </div>
+            <a :href="job.Job_Link" target="_blank" class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
+              Apply on Employer Site <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+
+  <script>
+    function jobPortal() {
+      return {
+        searchQuery: '',
+        selectedCat: 'ALL',
+        jobs: [],
+        async loadJobs() {
+          try {
+            const res = await fetch('jobs_data.json');
+            this.jobs = await res.json();
+          } catch(e) {
+            console.error("Error loading JSON", e);
+          }
+        },
+        get filteredJobs() {
+          return this.jobs.filter(j => {
+            const catMatch = this.selectedCat === 'ALL' || (j.Category && j.Category.toUpperCase().includes(this.selectedCat));
+            const q = this.searchQuery.toLowerCase();
+            const text = `${j.Job_Title} ${j.Company} ${j.Location}`.toLowerCase();
+            return catMatch && (!q || text.includes(q));
+          });
+        }
+      }
+    }
+  </script>
+</body>
+</html>

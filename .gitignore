@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+.venv/
+*.pyc
+.pytest_cache/
+.playwright/
+all_categories_all_sources_jobs.csv
+all_tvcs_categories_master.csv
+
 # Distribution / packaging
 .Python
 build/
