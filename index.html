@@ -34,6 +34,9 @@
             --cat4-bg: #f1f5f9;
             --cat4-text: #334155;
             --cat4-border: #cbd5e1;
+            --hiring-bg: #fef2f2;
+            --hiring-text: #b91c1c;
+            --hiring-border: #fca5a5;
             --success: #10b981;
             --warning: #f59e0b;
         }
@@ -58,7 +61,7 @@
         .site-header {
             background-color: #0f172a;
             color: #ffffff;
-            padding: 1.25rem 2rem;
+            padding: 1.15rem 2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
@@ -67,7 +70,7 @@
         }
 
         .header-inner {
-            max-width: 1360px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -114,12 +117,12 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
         }
 
         .btn-header {
-            padding: 0.55rem 1rem;
+            padding: 0.55rem 0.9rem;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -129,7 +132,7 @@
             color: #f1f5f9;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.45rem;
             transition: all 0.2s ease;
             text-decoration: none;
         }
@@ -151,9 +154,9 @@
 
         /* --- Main Container --- */
         .main-container {
-            max-width: 1360px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            max-width: 1400px;
+            margin: 1.75rem auto;
+            padding: 0 1.25rem;
             flex-grow: 1;
             width: 100%;
         }
@@ -184,7 +187,7 @@
         .banner-content p {
             font-size: 0.875rem;
             color: #c7d2fe;
-            max-width: 850px;
+            max-width: 880px;
         }
 
         .banner-pill {
@@ -196,6 +199,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
+            white-space: nowrap;
         }
 
         /* --- Search & Control Center (HiringCafe style) --- */
@@ -205,7 +209,7 @@
             border: 1px solid var(--border-subtle);
             padding: 1.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
 
         .search-bar-wrap {
@@ -268,7 +272,7 @@
         .filter-groups {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
         }
 
@@ -276,13 +280,14 @@
             padding: 0.55rem 0.85rem;
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             color: var(--text-heading);
             font-weight: 500;
             background: #ffffff;
             outline: none;
             cursor: pointer;
             transition: border-color 0.2s;
+            max-width: 240px;
         }
         .filter-select:focus { border-color: var(--primary); }
 
@@ -290,10 +295,10 @@
         .toggle-qualifying {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             background: #f0fdf4;
             border: 1px solid #86efac;
-            padding: 0.5rem 0.9rem;
+            padding: 0.5rem 0.85rem;
             border-radius: 8px;
             cursor: pointer;
             user-select: none;
@@ -316,8 +321,33 @@
             gap: 0.4rem;
         }
 
-        .toggle-qualifying:hover {
-            background: #dcfce7;
+        .toggle-hiring {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-hiring input {
+            accent-color: #e11d48;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .toggle-hiring span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #9f1239;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         /* --- Navigation Tabs --- */
@@ -328,6 +358,7 @@
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--border-subtle);
             padding-bottom: 0.25rem;
+            overflow-x: auto;
         }
 
         .tab-btn {
@@ -344,6 +375,7 @@
             align-items: center;
             gap: 0.6rem;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .tab-btn:hover {
@@ -373,14 +405,14 @@
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 1.5rem;
+            gap: 1.35rem;
         }
 
         .job-card {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.35rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -389,7 +421,7 @@
         }
 
         .job-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
             border-color: var(--border-hover);
         }
@@ -403,7 +435,7 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 0.5rem;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.75rem;
             flex-wrap: wrap;
         }
 
@@ -446,11 +478,24 @@
             border: 1px solid #fde68a;
         }
 
+        .hiring-badge {
+            background: var(--hiring-bg);
+            color: var(--hiring-text);
+            border: 1px solid var(--hiring-border);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
         .job-title {
             font-size: 1.15rem;
             font-weight: 700;
             color: var(--text-heading);
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.35rem;
             line-height: 1.35;
         }
 
@@ -468,7 +513,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.45rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
         }
 
         .meta-item {
@@ -495,14 +540,15 @@
             background: #ecfdf5;
             padding: 0.35rem 0.75rem;
             border-radius: 6px;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
         }
 
         .card-actions {
             display: flex;
-            gap: 0.65rem;
-            padding-top: 1rem;
+            gap: 0.6rem;
+            padding-top: 0.85rem;
             border-top: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
         }
 
         .btn-apply {
@@ -510,7 +556,7 @@
             background: var(--primary);
             color: white;
             text-decoration: none;
-            padding: 0.7rem 1rem;
+            padding: 0.65rem 1rem;
             border-radius: 8px;
             font-weight: 700;
             font-size: 0.9rem;
@@ -519,11 +565,47 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            transition: background 0.2s ease, transform 0.1s ease;
+            transition: background 0.2s ease;
         }
 
         .btn-apply:hover {
             background: var(--primary-hover);
+        }
+
+        .btn-phone {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: background 0.2s;
+        }
+        .btn-phone:hover {
+            background: #dcfce7;
+        }
+
+        .btn-email {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: background 0.2s;
+        }
+        .btn-email:hover {
+            background: #dbeafe;
         }
 
         .btn-bookmark {
@@ -531,7 +613,7 @@
             color: #475569;
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 0.7rem 0.9rem;
+            padding: 0.65rem 0.85rem;
             cursor: pointer;
             font-size: 0.95rem;
             display: inline-flex;
@@ -574,7 +656,8 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 0.5rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.65rem;
+            flex-wrap: wrap;
         }
 
         .employer-title {
@@ -596,18 +679,45 @@
             cursor: pointer;
         }
 
-        .employer-desc {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin: 0.85rem 0;
-            line-height: 1.4;
+        .employer-meta-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 0.75rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+        }
+
+        .employer-meta-item {
+            color: var(--text-body);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .employer-meta-item i {
+            color: #94a3b8;
+            margin-top: 2px;
+            width: 14px;
+            text-align: center;
+        }
+
+        .employer-actions-row {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
         }
 
         .btn-employer-site {
+            flex-grow: 1;
             background: #f8fafc;
             color: var(--text-heading);
             border: 1px solid var(--border-subtle);
-            padding: 0.6rem 0.85rem;
+            padding: 0.55rem 0.85rem;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -795,7 +905,7 @@
                 </p>
             </div>
             <div class="banner-pill">
-                Priority Tiered Feeds
+                785 Verified Employers
             </div>
         </div>
 
@@ -803,7 +913,7 @@
         <div class="search-container">
             <div class="search-bar-wrap">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="searchInput" class="search-input-main" placeholder="Search by job title, school, company, skill, or plaza (e.g. Teacher, Cyber, Middleton, Lake Sumter, Category I)...">
+                <input type="text" id="searchInput" class="search-input-main" placeholder="Search by job title, company, phone, plaza, or skill (e.g. Teacher, Cyber, Middleton, (352)...)...">
                 <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
@@ -812,7 +922,13 @@
                     <!-- TVCS Qualifying Full-Time Filter -->
                     <label class="toggle-qualifying">
                         <input type="checkbox" id="qualifyingOnlyCheck" onchange="applyFilters()">
-                        <span><i class="fa-solid fa-graduation-cap"></i> Full-Time Only (TVCS Admission Qualifying)</span>
+                        <span><i class="fa-solid fa-graduation-cap"></i> Full-Time Only (TVCS Qualifying)</span>
+                    </label>
+
+                    <!-- Actively Hiring Filter -->
+                    <label class="toggle-hiring">
+                        <input type="checkbox" id="activelyHiringCheck" onchange="applyFilters()">
+                        <span><i class="fa-solid fa-bolt"></i> Actively Hiring Only (<span id="hiringCountLabel">184</span>)</span>
                     </label>
 
                     <!-- Category Filter -->
@@ -848,8 +964,8 @@
                 <span class="tab-counter" id="activeJobsCountBadge">0</span>
             </button>
             <button class="tab-btn" id="tabEmployersBtn" onclick="switchTab('employers')">
-                <i class="fa-solid fa-building-columns"></i> All 432 Qualifying Employers
-                <span class="tab-counter" id="allEmployersCountBadge">432</span>
+                <i class="fa-solid fa-building-columns"></i> All Qualifying Businesses
+                <span class="tab-counter" id="allEmployersCountBadge">0</span>
             </button>
             <button class="tab-btn" id="tabSavedBtn" onclick="switchTab('saved')">
                 <i class="fa-solid fa-bookmark"></i> Saved Positions
@@ -1032,16 +1148,18 @@
             clearBtn.style.display = searchVal ? 'block' : 'none';
 
             const qualifyingOnly = document.getElementById('qualifyingOnlyCheck').checked;
+            const activelyHiringOnly = document.getElementById('activelyHiringCheck').checked;
             const categoryVal = document.getElementById('categoryFilter').value;
             const plazaVal = document.getElementById('plazaFilter').value;
             const employerVal = document.getElementById('employerFilter').value;
 
-            renderCurrentView(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal);
+            renderCurrentView(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal);
         }
 
-        function renderCurrentView(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal) {
+        function renderCurrentView(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal) {
             searchVal = searchVal !== undefined ? searchVal : document.getElementById('searchInput').value.trim().toLowerCase();
             qualifyingOnly = qualifyingOnly !== undefined ? qualifyingOnly : document.getElementById('qualifyingOnlyCheck').checked;
+            activelyHiringOnly = activelyHiringOnly !== undefined ? activelyHiringOnly : document.getElementById('activelyHiringCheck').checked;
             categoryVal = categoryVal || document.getElementById('categoryFilter').value;
             plazaVal = plazaVal || document.getElementById('plazaFilter').value;
             employerVal = employerVal || document.getElementById('employerFilter').value;
@@ -1049,7 +1167,7 @@
             if (currentTab === 'jobs') {
                 renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, false);
             } else if (currentTab === 'employers') {
-                renderEmployers(searchVal, categoryVal, plazaVal, employerVal);
+                renderEmployers(searchVal, activelyHiringOnly, categoryVal, plazaVal, employerVal);
             } else if (currentTab === 'saved') {
                 renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, true);
             }
@@ -1067,7 +1185,7 @@
                 if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
 
                 if (searchVal) {
-                    const matchText = `${job.Job_Title} ${job.Company} ${job.Plaza_Location} ${job.Location} ${job.Category} ${job.Description || ''}`.toLowerCase();
+                    const matchText = `${job.Job_Title} ${job.Company} ${job.Plaza_Location} ${job.Location} ${job.Category} ${job.Phone || ''} ${job.Description || ''}`.toLowerCase();
                     return matchText.includes(searchVal);
                 }
                 return true;
@@ -1080,7 +1198,7 @@
                     <div class="empty-state">
                         <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
                         <h3>No Verified Positions Found</h3>
-                        <p>${savedOnly ? "You haven't bookmarked any jobs yet. Browse active jobs and click the bookmark icon to save them." : "Try adjusting your search filters or browse the Approved Employers Directory to view corporate career portals."}</p>
+                        <p>${savedOnly ? "You haven't bookmarked any jobs yet. Browse active jobs and click the bookmark icon to save them." : "Try adjusting your search filters or browse the Approved Businesses Directory to view official websites and phone numbers."}</p>
                     </div>
                 `;
                 return;
@@ -1093,6 +1211,7 @@
                 const isCat2 = job.Category === 'CATEGORY II';
                 const isCat3 = job.Category === 'CATEGORY III';
                 const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
+                const phoneTel = job.Phone ? job.Phone.replace(/\D/g, '') : '';
 
                 return `
                     <div class="job-card">
@@ -1130,6 +1249,12 @@
                                     <i class="fa-regular fa-clock"></i>
                                     <span>Schedule: ${escapeHtml(job.Employment_Type || 'Full-Time')}</span>
                                 </div>
+                                ${job.Phone ? `
+                                    <div class="meta-item">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <a href="tel:${phoneTel}" style="color: var(--primary); text-decoration: none; font-weight: 600;">${escapeHtml(job.Phone)}</a>
+                                    </div>
+                                ` : ''}
                             </div>
 
                             <div class="salary-badge">
@@ -1141,6 +1266,11 @@
                             <a href="${job.Job_Link}" target="_blank" rel="noopener noreferrer" class="btn-apply">
                                 Apply on Official ATS <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
+                            ${job.Phone ? `
+                                <a href="tel:${phoneTel}" class="btn-phone" title="Call Employer">
+                                    <i class="fa-solid fa-phone"></i> Call
+                                </a>
+                            ` : ''}
                             <button class="btn-bookmark ${isSaved ? 'saved' : ''}" onclick="toggleBookmark('${escapeAttr(jobId)}')" title="${isSaved ? 'Remove Bookmark' : 'Save Job'}">
                                 <i class="fa-${isSaved ? 'solid' : 'regular'} fa-bookmark"></i>
                             </button>
@@ -1150,16 +1280,17 @@
             }).join('');
         }
 
-        function renderEmployers(searchVal, categoryVal, plazaVal, employerVal) {
+        function renderEmployers(searchVal, activelyHiringOnly, categoryVal, plazaVal, employerVal) {
             const container = document.getElementById('employersView');
 
             const filtered = allEmployers.filter(emp => {
+                if (activelyHiringOnly && !emp.Is_Hiring) return false;
                 if (categoryVal !== 'ALL' && emp.Category !== categoryVal) return false;
                 if (plazaVal !== 'ALL' && emp.Plaza !== plazaVal) return false;
                 if (employerVal !== 'ALL' && emp.Company !== employerVal) return false;
 
                 if (searchVal) {
-                    const matchText = `${emp.Company} ${emp.Plaza} ${emp.Category} ${emp.Qualifies_Description || ''}`.toLowerCase();
+                    const matchText = `${emp.Company} ${emp.Plaza} ${emp.Address || ''} ${emp.Phone || ''} ${emp.Contact_Person || ''} ${emp.Category} ${emp.Qualifies_Description || ''}`.toLowerCase();
                     return matchText.includes(searchVal);
                 }
                 return true;
@@ -1171,8 +1302,8 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon"><i class="fa-solid fa-building-circle-xmark"></i></div>
-                        <h3>No Employers Match Your Criteria</h3>
-                        <p>Try broadening your plaza or category search filter.</p>
+                        <h3>No Businesses Match Your Criteria</h3>
+                        <p>Try broadening your plaza, hiring, or category search filter.</p>
                     </div>
                 `;
                 return;
@@ -1183,6 +1314,7 @@
                 const isCat2 = emp.Category === 'CATEGORY II';
                 const isCat3 = emp.Category === 'CATEGORY III';
                 const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
+                const phoneTel = emp.Phone_Tel || (emp.Phone ? emp.Phone.replace(/\D/g, '') : '');
 
                 return `
                     <div class="employer-card">
@@ -1191,28 +1323,61 @@
                                 <span class="priority-badge ${catClass}">
                                     ${emp.Priority_Label || emp.Category}
                                 </span>
+                                ${emp.Is_Hiring ? `
+                                    <span class="hiring-badge" title="Registered as Actively Hiring in TVCS official marketplace">
+                                        <i class="fa-solid fa-bolt"></i> Actively Hiring
+                                    </span>
+                                ` : ''}
                                 ${emp.Active_Jobs_Count > 0 ? `
                                     <span class="active-jobs-pill" onclick="filterByEmployer('${escapeAttr(emp.Company)}')">
-                                        <i class="fa-solid fa-bolt"></i> ${emp.Active_Jobs_Count} Openings
+                                        <i class="fa-solid fa-briefcase"></i> ${emp.Active_Jobs_Count} Openings
                                     </span>
                                 ` : ''}
                             </div>
 
                             <h3 class="employer-title">${escapeHtml(emp.Company)}</h3>
 
-                            <div class="meta-item" style="margin-top: 0.5rem;">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>${escapeHtml(emp.Plaza)}</span>
+                            <div class="employer-meta-box">
+                                <div class="employer-meta-item">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span><strong>${escapeHtml(emp.Plaza)}</strong></span>
+                                </div>
+                                ${emp.Address && emp.Address !== emp.Plaza ? `
+                                    <div class="employer-meta-item">
+                                        <i class="fa-solid fa-map-pin"></i>
+                                        <span>${escapeHtml(emp.Address)}</span>
+                                    </div>
+                                ` : ''}
+                                ${emp.Phone ? `
+                                    <div class="employer-meta-item">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <a href="tel:${phoneTel}" style="color: #047857; text-decoration: none; font-weight: 700;">${escapeHtml(emp.Phone)}</a>
+                                    </div>
+                                ` : ''}
+                                ${emp.Contact_Person ? `
+                                    <div class="employer-meta-item">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                        <span>Contact: ${escapeHtml(emp.Contact_Person)}</span>
+                                    </div>
+                                ` : ''}
                             </div>
-
-                            <p class="employer-desc">
-                                ${escapeHtml(emp.Qualifies_Description || 'Approved TVCS qualifying business.')}
-                            </p>
                         </div>
 
-                        <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Careers / Inquire
-                        </a>
+                        <div class="employer-actions-row">
+                            <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> ${emp.Has_Official_Website ? 'Official Website' : 'Search Careers on Google'}
+                            </a>
+                            ${emp.Phone ? `
+                                <a href="tel:${phoneTel}" class="btn-phone" title="Call Business">
+                                    <i class="fa-solid fa-phone"></i> Call
+                                </a>
+                            ` : ''}
+                            ${emp.Email ? `
+                                <a href="mailto:${escapeAttr(emp.Email)}" class="btn-email" title="Email Business">
+                                    <i class="fa-solid fa-envelope"></i> Email
+                                </a>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1228,7 +1393,7 @@
         function exportFilteredData() {
             let csvContent = "data:text/csv;charset=utf-8,";
             if (currentTab === 'jobs' || currentTab === 'saved') {
-                csvContent += "Job Title,Company,Category,Priority,Employment Type,TVCS Qualifying,Plaza Location,Salary,Apply Link\n";
+                csvContent += "Job Title,Company,Category,Priority,Employment Type,TVCS Qualifying,Plaza Location,Phone,Salary,Apply Link\n";
                 const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
                 const qualifyingOnly = document.getElementById('qualifyingOnlyCheck').checked;
                 const categoryVal = document.getElementById('categoryFilter').value;
@@ -1243,7 +1408,7 @@
                     if (plazaVal !== 'ALL' && j.Plaza_Location !== plazaVal) return;
                     if (employerVal !== 'ALL' && j.Company !== employerVal) return;
                     if (searchVal) {
-                        const matchText = `${j.Job_Title} ${j.Company} ${j.Plaza_Location} ${j.Location}`.toLowerCase();
+                        const matchText = `${j.Job_Title} ${j.Company} ${j.Plaza_Location} ${j.Location} ${j.Phone || ''}`.toLowerCase();
                         if (!matchText.includes(searchVal)) return;
                     }
 
@@ -1255,19 +1420,25 @@
                         `"${(j.Employment_Type || '').replace(/"/g, '""')}"`,
                         `"${j.TVCS_Qualifying ? 'Yes (Full-Time)' : 'No (Part-Time)'}"`,
                         `"${(j.Plaza_Location || '').replace(/"/g, '""')}"`,
+                        `"${(j.Phone || '').replace(/"/g, '""')}"`,
                         `"${(j.Estimated_Salary || '').replace(/"/g, '""')}"`,
                         `"${(j.Job_Link || '').replace(/"/g, '""')}"`
                     ];
                     csvContent += row.join(",") + "\n";
                 });
             } else {
-                csvContent += "Company,Category,Priority,Plaza Location,Website\n";
+                csvContent += "Company,Category,Priority,Actively Hiring,Plaza,Address,Phone,Email,Contact Person,Website\n";
                 allEmployers.forEach(e => {
                     const row = [
                         `"${(e.Company || '').replace(/"/g, '""')}"`,
                         `"${(e.Category || '').replace(/"/g, '""')}"`,
                         `"${(e.Priority_Label || '').replace(/"/g, '""')}"`,
+                        `"${e.Is_Hiring ? 'Yes' : 'No'}"`,
                         `"${(e.Plaza || '').replace(/"/g, '""')}"`,
+                        `"${(e.Address || '').replace(/"/g, '""')}"`,
+                        `"${(e.Phone || '').replace(/"/g, '""')}"`,
+                        `"${(e.Email || '').replace(/"/g, '""')}"`,
+                        `"${(e.Contact_Person || '').replace(/"/g, '""')}"`,
                         `"${(e.Website || '').replace(/"/g, '""')}"`
                     ];
                     csvContent += row.join(",") + "\n";
@@ -1329,6 +1500,9 @@
 
                 document.getElementById('activeJobsCountBadge').innerText = allJobs.length;
                 document.getElementById('allEmployersCountBadge').innerText = allEmployers.length;
+
+                const hiringCount = allEmployers.filter(e => e.Is_Hiring).length;
+                document.getElementById('hiringCountLabel').innerText = hiringCount;
 
                 populateDropdowns();
                 applyFilters();
