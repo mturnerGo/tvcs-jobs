@@ -10,7 +10,7 @@ An automated job aggregator and searchable dashboard designed specifically to he
    - Previous versions generated placeholder cards linking to general Google Search queries. 
    - Every single listing in this engine is an active, verified requisition sourced directly from official employer ATS portals (ADP Workforce Now, NEOGOV GovernmentJobs, Jacobs ATS).
 2. **Dedicated TVCS Admission Qualification Filtering**:
-   - **Full-Time Only Switch**: Florida law and TVCS policy strictly require continuous full-time employment (30+ hours/week) for school admission eligibility. The engine flags qualifying full-time roles vs. non-qualifying part-time roles.
+   - **Qualifying Positions Switch**: Instantly filter for verified positions with approved Category I, II, III, and IV business partners that confer enrollment eligibility under TVCS criteria.
    - **Priority Tier Tagging**: Visual badges highlighting Category I (1st lottery priority), Category II (Subcontractors - 2nd priority), Category III (Commercial plaza tenants), and Category IV (Approved vendors).
 3. **Complete 432 Qualifying Employers Directory**:
    - Searchable directory of all 432 certified businesses across Lake Sumter Landing, Brownwood Paddock Square, Spanish Springs, Middleton Downtown, Magnolia Plaza, Sawgrass Grove, and Pinellas Plaza.
@@ -20,14 +20,14 @@ An automated job aggregator and searchable dashboard designed specifically to he
 
 ## TVCS Enrollment Categories Covered
 
-| Category | Description | Admission Priority |
+| Category | Official Definition | Admission Priority |
 | :--- | :--- | :--- |
-| **Category I** | Direct employees of The Villages of Lake-Sumter, Inc., Holding Company, TVCS instructional & operational staff, Properties of The Villages, and Recreation. | **Highest (1st Priority Lottery)** |
-| **Category II** | Direct subcontractors performing continuous, full-time operational services (e.g. Jacobs Engineering / utilities, Sumter County BOCC). | **Priority (2nd Priority Lottery)** |
-| **Category III** | Commercial tenants leasing physical commercial real estate in The Villages town squares and plazas. | **Priority (3rd Priority Lottery)** |
-| **Category IV** | Approved vendors and regional business partners under continuous contract. | **Qualifying 4th Tier** |
+| **Category I** | A Villages’ Company or Salesperson under contract with Properties of The Villages. | **Highest Priority** |
+| **Category II** | **Business Partner Sub-Contractors**: Business Partners under direct contract, other than a lease, with a Villages’ Company providing independent contractor, construction, maintenance, consulting, or other similar services in support of Villages’ Projects. (Services must be regular, ongoing, and paid directly by a Villages’ Company, or meet the Minimum Threshold Percentage). | **2nd Priority** |
+| **Category III** | Business Partners who lease directly from one of the commercial real estate entities in a Villages’ company. | **3rd Priority** |
+| **Category IV** | Business Partners that own or lease a permanent business site from a non-Villages’ entity, from which they operate their business within The Villages (reviewed and confirmed by the TVCS Enrollment Committee). | **4th Priority** |
 
-> **Statutory Note**: Under Florida Statute § 1002.33, parents/guardians must maintain continuous full-time employment throughout their child's enrollment.
+> **Official Criteria Note**: Admission qualification is governed by direct employer categorization with a Villages' Company and official TVCS Enrollment Committee review. Fixed 30–40 hour requirements do not apply.
 
 ---
 

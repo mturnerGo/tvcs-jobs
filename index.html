@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TVCS Qualifying Careers & Employer Search Engine</title>
+        <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1208,7 +1214,7 @@
             <div class="banner-content">
                 <h2><i class="fa-solid fa-shield-check"></i> Florida Charter Statute § 1002.33 Direct Enrollment</h2>
                 <p>
-                    Dependents qualify for admission to <strong>The Villages Charter School (TVCS)</strong> based on the parent/guardian's continuous full-time employment with an approved Category I, II, III, or IV business.
+                    Dependents qualify for admission to <strong>The Villages Charter School (TVCS)</strong> based on qualifying employment with an approved Category I, II, III, or IV Villages' business partner.
                 </p>
             </div>
             <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
@@ -1251,7 +1257,7 @@
                     <!-- TVCS Qualifying Full-Time Filter -->
                     <label class="toggle-qualifying">
                         <input type="checkbox" id="qualifyingOnlyCheck" onchange="applyFilters()">
-                        <span><i class="fa-solid fa-graduation-cap"></i> Full-Time Only (TVCS Qualifying)</span>
+                        <span><i class="fa-solid fa-graduation-cap"></i> TVCS Qualifying Positions Only</span>
                     </label>
 
                     <!-- Actively Hiring Filter -->
@@ -1263,10 +1269,10 @@
                     <!-- Category Filter -->
                     <select id="categoryFilter" class="filter-select" onchange="applyFilters()">
                         <option value="ALL">All Categories (I – IV)</option>
-                        <option value="CATEGORY I">Category I (Direct Operating Entities - 1st Priority)</option>
-                        <option value="CATEGORY II">Category II (Direct Subcontractors - 2nd Priority)</option>
-                        <option value="CATEGORY III">Category III (Commercial Tenants - 3rd Priority)</option>
-                        <option value="CATEGORY IV">Category IV (Approved Vendors - 4th Priority)</option>
+                        <option value="CATEGORY I">Category I – Villages’ Company / Properties Sales</option>
+                        <option value="CATEGORY II">Category II – Business Partner Sub-Contractors</option>
+                        <option value="CATEGORY III">Category III – Commercial Lease Tenants</option>
+                        <option value="CATEGORY IV">Category IV – Permanent Business Sites (Non-Villages Entity)</option>
                     </select>
 
                     <!-- Plaza / Location Filter -->
@@ -1417,41 +1423,61 @@
                 The Villages Charter School operates in partnership with The Villages under Florida Statute § 1002.33. Enrollment admission is granted based on parent employment priority tiers:
             </p>
 
-            <table class="criteria-table">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Eligible Employers</th>
-                        <th>Admission Priority</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Category I</strong></td>
-                        <td>Direct employees of The Villages of Lake-Sumter, Inc., Holding Company, TVCS teachers &amp; staff, Properties of The Villages, Recreation.</td>
-                        <td><span class="priority-badge priority-cat1">1st Priority Lottery</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Category II</strong></td>
-                        <td>Direct full-time operational subcontractors (e.g. Jacobs Engineering / utilities, Sumter County BOCC).</td>
-                        <td><span class="priority-badge priority-cat2">2nd Priority Lottery</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Category III</strong></td>
-                        <td>Full-time employees of commercial tenants leasing physical business space from The Villages across town squares and commercial plazas.</td>
-                        <td><span class="priority-badge priority-cat3">3rd Priority Lottery</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Category IV</strong></td>
-                        <td>Full-time employees of approved vendors and regional business partners.</td>
-                        <td><span class="priority-badge priority-cat4">4th Priority Tier</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 480px; overflow-y: auto; padding-right: 0.5rem;">
+                <!-- Category I -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-left: 4px solid #10b981; border-radius: 8px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #065f46; font-size: 1rem;"><i class="fa-solid fa-star"></i> CATEGORY I</strong>
+                        <span class="priority-badge priority-cat1">Highest Priority</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--text-body); line-height: 1.55;">
+                        A Villages’ Company or Salesperson under contract with Properties of The Villages.
+                    </p>
+                </div>
 
-            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; color: #92400e;">
-                <strong><i class="fa-solid fa-triangle-exclamation"></i> Mandatory Full-Time Requirement:</strong>
-                Florida statutory guidelines require continuous <strong>full-time</strong> employment (typically 30–40 hours/week) during the student's enrollment. Part-time positions do not meet school eligibility requirements.
+                <!-- Category II -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #1e40af; font-size: 1rem;"><i class="fa-solid fa-handshake"></i> CATEGORY II — Business Partner Sub-Contractors</strong>
+                        <span class="priority-badge priority-cat2">2nd Priority</span>
+                    </div>
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.88rem; color: var(--text-body); line-height: 1.55;">
+                        Business Partners under direct contract, other than a lease, with a Villages’ Company providing independent contractor, construction, maintenance, consulting, or other similar services in support of Villages’ Projects. Under “direct contract” refers to the relationships between Category 2 Business Partners and a Villages’ Company.
+                    </p>
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                        The work and/or services provided to a Villages’ Company must be regular and ongoing, and that work must be paid for directly from a Villages’ Company. Business Partners in Category 2 whose book of business meets the Minimum Threshold Percentage for Villages’ Projects may qualify for employee categorization that isn’t solely dependent on the hours worked on only Villages’ Projects.
+                    </p>
+                    <p style="margin: 0; font-size: 0.82rem; color: #475569; font-style: italic; line-height: 1.5;">
+                        For businesses who perform regular and ongoing services to a Villages’ Company but who also perform services for other businesses and/or the aftermarket consumer, only that work provided to and paid for by a Villages’ Company will be considered when determining eligibility, and only those employees performing those services under direct contract are eligible for the benefits of The Villages Charter School.
+                    </p>
+                </div>
+
+                <!-- Category III -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-left: 4px solid #f59e0b; border-radius: 8px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #92400e; font-size: 1rem;"><i class="fa-solid fa-store"></i> CATEGORY III — Commercial Lease Tenants</strong>
+                        <span class="priority-badge priority-cat3">3rd Priority</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--text-body); line-height: 1.55;">
+                        Business Partners who lease directly from one of the commercial real estate entities in a Villages’ company.
+                    </p>
+                </div>
+
+                <!-- Category IV -->
+                <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-left: 4px solid #8b5cf6; border-radius: 8px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #5b21b6; font-size: 1rem;"><i class="fa-solid fa-building-circle-check"></i> CATEGORY IV — Permanent Business Sites (Non-Villages Entity)</strong>
+                        <span class="priority-badge priority-cat4">4th Priority</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--text-body); line-height: 1.55;">
+                        Business Partners that own or lease a permanent business site from a non-Villages’ entity, from which they operate their business within The Villages. The Villages Charter School Enrollment Committee will review each applicant in this Category to confirm, in its sole discretion, that the Business Partner participates in and benefits the development and operation of The Villages.
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem 1rem; margin-top: 1rem; font-size: 0.85rem; color: #1e40af;">
+                <strong><i class="fa-solid fa-circle-info"></i> Official Qualification Note:</strong>
+                Eligibility is determined strictly by the employer's official partnership categorization, direct contract status with a Villages’ Company, and TVCS Enrollment Committee verification. Fixed 30–40 hour requirements do not apply.
             </div>
 
             <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap;">
