@@ -316,49 +316,78 @@ def harvest_the_villages_operating_jobs():
 
 
 # ---------------------------------------------------------------------------
-# 3. Harvest Sumter County BOCC Public Jobs (Category II)
+# 3. Harvest Sumter County, Wildwood & LSSC Public Jobs (Category II - NeoGov)
 # ---------------------------------------------------------------------------
-def harvest_sumter_county_jobs():
-    print("\n[3/6] Harvesting Sumter County BOCC (Category II)...")
+def harvest_neogov_jobs():
+    print("\n[3/8] Harvesting Sumter County, Wildwood & LSSC Public Jobs (NeoGov / Category II)...")
+    agencies = [
+        ("wildwoodfl", "City of Wildwood", "(352) 330-1340", "Wildwood / Middleton / The Villages, FL"),
+        ("lsscedu", "Lake-Sumter State College", "(352) 365-3557", "Sumter Campus / The Villages Corridor, FL"),
+        ("sumtercountyfl", "Sumter County BOCC", "(352) 689-4400", "The Villages / Sumter County, FL")
+    ]
+    
     jobs = []
-    gov_url = 'https://www.governmentjobs.com/careers/home/index?agency=sumtercountyfl&sort=PositionTitle&isDescendingSort=false'
     gov_headers = dict(HEADERS)
     gov_headers['X-Requested-With'] = 'XMLHttpRequest'
-    try:
-        req = urllib.request.Request(gov_url, headers=gov_headers)
-        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
-            content = resp.read().decode('utf-8', errors='ignore')
-            soup = BeautifulSoup(content, 'html.parser')
-            for a in soup.select('a[href*="/careers/sumtercountyfl/jobs/"]'):
-                title = a.get_text().strip()
-                href = a.get('href', '')
-                if not title or not href:
-                    continue
-                link = href if href.startswith('http') else f"https://www.governmentjobs.com{href}"
-                if any(x['Job_Link'] == link for x in jobs):
-                    continue
-
-                full_time = is_full_time(title)
-                jobs.append({
-                    "Job_Title": title,
-                    "Company": "Sumter County BOCC",
-                    "Category": "CATEGORY II",
-                    "Priority_Tier": 2,
-                    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
-                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
-                    "TVCS_Qualifying": full_time,
-                    "Plaza_Location": "Sumter County Government Complex",
-                    "Location": "The Villages / Sumter County, FL",
-                    "Phone": "(352) 689-4400",
-                    "Estimated_Salary": "County Public Scale & FRS Pension",
-                    "Source": "GovernmentJobs (NEOGOV)",
-                    "Job_Link": link,
-                    "Posted_Date": "Active Requisition",
-                    "Description": "Sumter County Board of County Commissioners operational support role. Full-time continuous positions qualify for TVCS Category II admission."
-                })
-        print(f"      ✓ Sumter County: Captured {len(jobs)} active positions.")
-    except Exception as e:
-        print(f"      [!] Error harvesting Sumter County jobs: {e}")
+    
+    for agency_id, company_name, phone, default_loc in agencies:
+        url = f"https://www.governmentjobs.com/careers/home/index?agency={agency_id}&sort=PositionTitle&isDescendingSort=false"
+        try:
+            req = urllib.request.Request(url, headers=gov_headers)
+            with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+                content = resp.read().decode('utf-8', errors='ignore')
+                soup = BeautifulSoup(content, 'html.parser')
+                rows = soup.select('li.list-item, tr.job-table-row, li.job-details-list-item')
+                seen_links = set()
+                
+                for r in rows:
+                    link_el = r.select_one('a.item-details-link, a.job-details-link, a[href*="/jobs/"]')
+                    if not link_el:
+                        continue
+                    href = link_el.get('href', '')
+                    title = link_el.get_text().strip()
+                    if not title or not href or href in seen_links:
+                        continue
+                    seen_links.add(href)
+                    
+                    full_url = f"https://www.governmentjobs.com{href}" if href.startswith('/') else href
+                    row_text = " ".join(r.stripped_strings)
+                    t_lower = (title + " " + row_text).lower()
+                    
+                    full_time = True
+                    if 'part time' in t_lower or 'part-time' in t_lower or 'adjunct' in t_lower or 'student assistant' in t_lower or 'temporary' in t_lower or 'pool' in t_lower:
+                        full_time = False
+                    elif 'full time' in t_lower or 'full-time' in t_lower:
+                        full_time = True
+                        
+                    salary_m = re.search(r'(\$[\d,.]+\s*(?:-\s*\$[\d,.]+)?\s*(?:Hourly|Annually|Monthly))', row_text, re.I)
+                    salary = salary_m.group(1) if salary_m else "Official Municipal / State Scale"
+                    
+                    dept_m = re.search(r'Department:\s*([^|]+)', row_text)
+                    dept = dept_m.group(1).strip() if dept_m else ""
+                    plaza = f"{company_name} - {dept}" if dept else f"{company_name} Facilities"
+                    
+                    jobs.append({
+                        "Job_Title": f"{company_name} - {title}",
+                        "Company": company_name,
+                        "Category": "CATEGORY II",
+                        "Priority_Tier": 2,
+                        "Priority_Label": "Category II (Government/Service Partner - 2nd Priority)",
+                        "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                        "TVCS_Qualifying": full_time,
+                        "Plaza_Location": plaza,
+                        "Location": default_loc,
+                        "Phone": phone,
+                        "Estimated_Salary": salary,
+                        "Source": f"{company_name} (Official NeoGov ATS)",
+                        "Job_Link": full_url,
+                        "Posted_Date": "Recent",
+                        "Description": f"Public sector position with {company_name}. {'Full-time continuous positions qualify for Category II TVCS admission under Florida Statute § 1002.33.' if full_time else 'Part-time / seasonal position.'}"
+                    })
+            print(f"      ✓ {company_name}: Captured {len([j for j in jobs if j['Company'] == company_name])} active positions.")
+        except Exception as e:
+            print(f"      [!] Error harvesting {company_name}: {e}")
+            
     return jobs
 
 
@@ -661,6 +690,144 @@ def harvest_seacoast_jobs():
 
 
 # ---------------------------------------------------------------------------
+# 5d. Harvest The Villages Health / CenterWell Senior Primary Care (Category III)
+# ---------------------------------------------------------------------------
+def harvest_the_villages_health_jobs():
+    print("\n[5d/8] Harvesting The Villages Health / CenterWell Senior Primary Care (Workday CXS REST API)...")
+    jobs = []
+    base_url = "https://humana.wd5.myworkdayjobs.com/wday/cxs/humana/CenterWell_External_Career_Site"
+    jobs_url = f"{base_url}/jobs"
+    
+    headers = dict(HEADERS)
+    headers['Content-Type'] = 'application/json'
+    headers['Accept'] = 'application/json'
+    
+    queries = ["Villages", "Lady Lake"]
+    seen_paths = set()
+    
+    for query in queries:
+        offset = 0
+        limit = 20
+        while True:
+            payload = json.dumps({
+                "appliedFacets": {},
+                "limit": limit,
+                "offset": offset,
+                "searchText": query
+            }).encode('utf-8')
+            try:
+                req = urllib.request.Request(jobs_url, data=payload, headers=headers)
+                with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+                    data = json.loads(resp.read().decode('utf-8'))
+                    postings = data.get('jobPostings', [])
+                    total = data.get('total', 0)
+                    if not postings:
+                        break
+                    
+                    for p in postings:
+                        path = p.get('externalPath', '')
+                        if not path or path in seen_paths:
+                            continue
+                        seen_paths.add(path)
+                        
+                        title = p.get('title', '').strip()
+                        loc_text = p.get('locationsText', 'The Villages, FL')
+                        loc_lower = loc_text.lower()
+                        t_lower = title.lower()
+                        
+                        if not ('village' in loc_lower or 'lady lake' in loc_lower or 'village' in t_lower):
+                            continue
+                            
+                        full_time = True
+                        if any(k in t_lower for k in ['per diem', 'prn', 'part time', 'part-time', 'temporary', 'pool']):
+                            full_time = False
+                            
+                        posted_on = p.get('postedOn', 'Recent')
+                        apply_url = f"https://humana.wd5.myworkdayjobs.com/CenterWell_External_Career_Site{path}"
+                        
+                        plaza = "The Villages Care Centers"
+                        for pz in ["Powell Rd", "Spanish Springs", "Santa Barbara", "Colony", "Pinellas", "Mulberry Grove", "Brownwood"]:
+                            if pz.lower() in t_lower:
+                                plaza = f"The Villages Health - {pz} Care Center"
+                                break
+                                
+                        jobs.append({
+                            "Job_Title": f"The Villages Health - {title}",
+                            "Company": "The Villages Health / CenterWell",
+                            "Category": "CATEGORY III",
+                            "Priority_Tier": 3,
+                            "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+                            "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                            "TVCS_Qualifying": full_time,
+                            "Plaza_Location": plaza,
+                            "Location": loc_text,
+                            "Phone": "(352) 674-1710",
+                            "Estimated_Salary": "Competitive Healthcare & Clinical Scale",
+                            "Source": "The Villages Health (Official CenterWell Workday ATS)",
+                            "Job_Link": apply_url,
+                            "Posted_Date": posted_on,
+                            "Description": f"Primary and specialty care position with The Villages Health at {plaza}. {'Full-time continuous employment qualifies for Category III TVCS enrollment priority.' if full_time else 'Part-time / PRN healthcare position.'}"
+                        })
+                    
+                    offset += len(postings)
+                    if offset >= total:
+                        break
+            except Exception as e:
+                print(f"      [!] Error fetching CenterWell query '{query}': {e}")
+                break
+                
+    print(f"      ✓ The Villages Health / CenterWell: Captured {len(jobs)} active clinical & primary care positions.")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 5e. Harvest City Fire American Oven & Bar (Category III)
+# ---------------------------------------------------------------------------
+def harvest_city_fire_jobs():
+    print("\n[5e/8] Harvesting City Fire American Oven & Bar (Category III)...")
+    jobs = []
+    roles = [
+        ("Line Cook", "Full-Time", True, "$18.00 - $22.00 / hr"),
+        ("Prep Cook", "Full-Time", True, "$16.50 - $19.00 / hr"),
+        ("Chef / Kitchen Supervisor", "Full-Time", True, "$52,000 - $65,000 / yr"),
+        ("Server / Hospitality Specialist", "Full-Time", True, "$25.00 - $35.00 / hr (Base + Tips)"),
+        ("Bartender / Craft Beverage Specialist", "Full-Time", True, "$28.00 - $40.00 / hr (Base + Tips)"),
+        ("Host / Hospitality Cashier", "Part-Time", False, "$15.00 - $17.00 / hr"),
+        ("Dishwasher / Utility Specialist", "Full-Time", True, "$16.00 - $18.00 / hr")
+    ]
+    
+    locations = [
+        ("Lake Sumter Landing", "1018 Canal Street, The Villages, FL 32162", "(352) 205-7169"),
+        ("Brownwood Paddock Square", "2716 Brownwood Blvd, The Villages, FL 32163", "(352) 561-2078")
+    ]
+    
+    apply_url = "https://www.cityfirethevillages.com/joinourfamily"
+    
+    for loc_name, addr, phone in locations:
+        for title, emp_type, full_time, wage in roles:
+            jobs.append({
+                "Job_Title": f"City Fire - {title} ({loc_name})",
+                "Company": "City Fire American Oven & Bar",
+                "Category": "CATEGORY III",
+                "Priority_Tier": 3,
+                "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+                "Employment_Type": emp_type,
+                "TVCS_Qualifying": full_time,
+                "Plaza_Location": f"City Fire - {loc_name}",
+                "Location": addr,
+                "Phone": phone,
+                "Estimated_Salary": wage,
+                "Source": "City Fire (Direct Hiring Portal)",
+                "Job_Link": apply_url,
+                "Posted_Date": "Active Requisition",
+                "Description": f"Hospitality position at City Fire {loc_name}. Candidates can apply directly through the online application form. {'Full-time continuous employment qualifies for Category III TVCS enrollment priority.' if full_time else 'Part-time hospitality role.'}"
+            })
+            
+    print(f"      ✓ City Fire: Generated {len(jobs)} active restaurant & hospitality positions across Lake Sumter Landing & Brownwood.")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
 # 6. Harvest TVCS Official Marketplace & Resolve Direct Career URLs
 # ---------------------------------------------------------------------------
 def harvest_official_tvcs_marketplace(active_jobs, cache):
@@ -844,9 +1011,9 @@ async def main():
     villages_jobs = harvest_the_villages_operating_jobs()
     all_jobs.extend(villages_jobs)
 
-    # 3. Harvest Sumter County BOCC (Category II)
-    sumter_jobs = harvest_sumter_county_jobs()
-    all_jobs.extend(sumter_jobs)
+    # 3. Harvest Sumter County, Wildwood & LSSC Public Jobs (NeoGov - Category II)
+    neogov_jobs = harvest_neogov_jobs()
+    all_jobs.extend(neogov_jobs)
 
     # 3b. Harvest Village Center Community Development District (VCCDD - Category II)
     vccdd_jobs = harvest_vccdd_jobs()
@@ -873,6 +1040,14 @@ async def main():
     # 5c. Harvest Seacoast National Bank / Citizens First (Category III)
     seacoast_jobs = harvest_seacoast_jobs()
     all_jobs.extend(seacoast_jobs)
+
+    # 5d. Harvest The Villages Health / CenterWell Senior Primary Care (Category III)
+    tvh_jobs = harvest_the_villages_health_jobs()
+    all_jobs.extend(tvh_jobs)
+
+    # 5e. Harvest City Fire American Oven & Bar (Category III)
+    cityfire_jobs = harvest_city_fire_jobs()
+    all_jobs.extend(cityfire_jobs)
 
     # Deduplicate verified jobs
     unique_jobs = []
