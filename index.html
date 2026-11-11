@@ -602,10 +602,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-family: inherit;
         }
         .btn-email:hover {
             background: #dbeafe;
+            border-color: #93c5fd;
+            color: #1d4ed8;
         }
 
         .btn-bookmark {
@@ -1116,6 +1120,56 @@
         </div>
     </div>
 
+    <!-- Modal: Email Business Inquiries -->
+    <div id="emailModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'emailModal')">
+        <div class="modal-box" style="max-width: 520px;">
+            <button class="modal-close-btn" onclick="closeModal('emailModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-heading);" id="emailModalTitle">Contact Employer</h3>
+                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);" id="emailModalSubtitle">Official Employment Inquiry</p>
+                </div>
+            </div>
+
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0.85rem 0 0.5rem 0;">
+                Click below to open your preferred email client or copy their verified address:
+            </p>
+
+            <!-- Email Display & Copy Box -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.75rem 0.95rem; margin-bottom: 1.25rem;">
+                <span id="emailModalAddress" style="font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #1e293b; word-break: break-all;">email@domain.com</span>
+                <button type="button" onclick="copyModalEmail()" class="btn-header" style="background: #ffffff; color: var(--primary); border: 1px solid #cbd5e1; padding: 0.35rem 0.65rem; font-size: 0.8rem; cursor: pointer;" title="Copy to clipboard">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>
+            </div>
+
+            <!-- Action Options -->
+            <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <!-- 1. Open in Gmail -->
+                <a id="emailModalGmailBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-employer-site" style="background: #ea4335; color: #ffffff; justify-content: center; padding: 0.8rem; text-decoration: none; font-weight: 700; border: none; box-shadow: 0 2px 6px rgba(234, 67, 53, 0.25);">
+                    <i class="fa-brands fa-google"></i> Open in Gmail (Browser)
+                </a>
+
+                <!-- 2. Open in Outlook Web -->
+                <a id="emailModalOutlookBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-employer-site" style="background: #0078d4; color: #ffffff; justify-content: center; padding: 0.8rem; text-decoration: none; font-weight: 700; border: none; box-shadow: 0 2px 6px rgba(0, 120, 212, 0.25);">
+                    <i class="fa-brands fa-microsoft"></i> Open in Outlook Webmail
+                </a>
+
+                <!-- 3. Open in Default Mail Client (mailto:) -->
+                <a id="emailModalDefaultBtn" href="#" class="btn-employer-site" style="background: #ffffff; color: #334155; border: 1px solid #cbd5e1; justify-content: center; padding: 0.8rem; text-decoration: none; font-weight: 600;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Default Email App (Mail / Outlook / Apple Mail)
+                </a>
+            </div>
+
+            <div style="margin-top: 1rem; background: #f1f5f9; border-radius: 8px; padding: 0.75rem; font-size: 0.8rem; color: #64748b;">
+                <strong><i class="fa-solid fa-lightbulb"></i> Tip:</strong> A pre-written subject line and message template inquiring about TVCS full-time qualifying roles has been included automatically.
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
@@ -1171,6 +1225,53 @@
             document.getElementById('toastMsg').innerText = msg;
             t.style.display = 'flex';
             setTimeout(() => { t.style.display = 'none'; }, 2400);
+        }
+
+        let currentModalEmail = '';
+        function openEmailModal(email, companyName) {
+            if (!email) return;
+            currentModalEmail = email;
+
+            // 1. Copy to clipboard immediately
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).then(() => {
+                    showToast(`Copied ${email} to clipboard!`);
+                }).catch(() => {});
+            }
+
+            // 2. Set modal text
+            document.getElementById('emailModalTitle').innerText = companyName || 'Contact Employer';
+            document.getElementById('emailModalAddress').innerText = email;
+
+            const subject = `Employment Inquiry - ${companyName || 'The Villages'} (TVCS Qualifying Applicant)`;
+            const body = `Hello,\n\nI am writing to inquire about full-time employment opportunities with ${companyName || 'your organization'}.\n\nI am actively seeking qualifying full-time continuous employment for dependent student enrollment at The Villages Charter School (TVCS) under Florida Statute § 1002.33.\n\nCould you please let me know if you have any current or upcoming full-time openings?\n\nThank you,\n[Your Name]\n[Your Phone Number]`;
+
+            // Native mailto app
+            const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            document.getElementById('emailModalDefaultBtn').href = mailtoUrl;
+
+            // Gmail browser compose
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            document.getElementById('emailModalGmailBtn').href = gmailUrl;
+
+            // Outlook webmail
+            const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            document.getElementById('emailModalOutlookBtn').href = outlookUrl;
+
+            openModal('emailModal');
+        }
+
+        function copyModalEmail() {
+            if (!currentModalEmail) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(currentModalEmail).then(() => {
+                    showToast(`Copied ${currentModalEmail} to clipboard!`);
+                }).catch(() => {
+                    showToast("Failed to copy email");
+                });
+            } else {
+                showToast(`Email: ${currentModalEmail}`);
+            }
         }
 
         // View Tabs Controller
@@ -1307,6 +1408,9 @@
                 const isCat3 = job.Category === 'CATEGORY III';
                 const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
                 const phoneTel = job.Phone ? job.Phone.replace(/\D/g, '') : '';
+                
+                const empMatch = allEmployers.find(e => e.Company && e.Company.toLowerCase() === job.Company.toLowerCase());
+                const jobEmail = empMatch && empMatch.Email ? empMatch.Email : '';
 
                 return `
                     <div class="job-card">
@@ -1365,6 +1469,11 @@
                                 <a href="tel:${phoneTel}" class="btn-phone" title="Call Employer">
                                     <i class="fa-solid fa-phone"></i> Call
                                 </a>
+                            ` : ''}
+                            ${jobEmail ? `
+                                <button type="button" class="btn-email" onclick="openEmailModal('${escapeAttr(jobEmail)}', '${escapeAttr(job.Company)}')" title="Email Employer">
+                                    <i class="fa-solid fa-envelope"></i> Email
+                                </button>
                             ` : ''}
                             <button class="btn-bookmark ${isSaved ? 'saved' : ''}" onclick="toggleBookmark('${escapeAttr(jobId)}')" title="${isSaved ? 'Remove Bookmark' : 'Save Job'}">
                                 <i class="fa-${isSaved ? 'solid' : 'regular'} fa-bookmark"></i>
@@ -1504,9 +1613,9 @@
                                 </a>
                             ` : ''}
                             ${emp.Email ? `
-                                <a href="mailto:${escapeAttr(emp.Email)}" class="btn-email" title="Email Business">
+                                <button type="button" class="btn-email" onclick="openEmailModal('${escapeAttr(emp.Email)}', '${escapeAttr(emp.Company)}')" title="Email or Inquire with ${escapeAttr(emp.Company)}">
                                     <i class="fa-solid fa-envelope"></i> Email
-                                </a>
+                                </button>
                             ` : ''}
                         </div>
                     </div>
