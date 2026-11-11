@@ -1257,10 +1257,10 @@
 
             <div class="filters-row">
                 <div class="filter-groups">
-                    <!-- TVCS Qualifying Full-Time Filter -->
+                    <!-- Full-Time Schedule Filter -->
                     <label class="toggle-qualifying">
                         <input type="checkbox" id="qualifyingOnlyCheck" onchange="applyFilters()">
-                        <span><i class="fa-solid fa-graduation-cap"></i> TVCS Qualifying Positions Only</span>
+                        <span><i class="fa-regular fa-clock"></i> Full-Time Schedule Only</span>
                     </label>
 
                     <!-- Actively Hiring Filter -->
@@ -2172,7 +2172,7 @@
             const jobsPool = (currentTab !== 'saved' && resumeMatchedJobs) ? resumeMatchedJobs : allJobs;
             // Count matching active jobs
             const matchingJobsCount = jobsPool.filter(job => {
-                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (qualifyingOnly && job.Employment_Type !== 'Full-Time') return false;
                 if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
                 if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
                 if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
@@ -2205,7 +2205,7 @@
             const matchingSavedCount = allJobs.filter(job => {
                 const jobId = job.Job_Link || (job.Job_Title + job.Company);
                 if (!savedJobIds.has(jobId)) return false;
-                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (qualifyingOnly && job.Employment_Type !== 'Full-Time') return false;
                 if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
                 if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
                 if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
@@ -2277,7 +2277,7 @@
             const filtered = jobsPool.filter(job => {
                 const jobId = job.Job_Link || (job.Job_Title + job.Company);
                 if (savedOnly && !savedJobIds.has(jobId)) return false;
-                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (qualifyingOnly && job.Employment_Type !== 'Full-Time') return false;
                 if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
                 if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
                 if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
@@ -2344,15 +2344,14 @@
                                 <span class="priority-badge ${catClass}">
                                     <i class="fa-solid fa-award"></i> ${job.Priority_Label || job.Category}
                                 </span>
-                                ${job.TVCS_Qualifying ? `
-                                    <span class="eligibility-pill eligibility-qualifying" title="Meets Florida statutory requirement for full-time employment">
-                                        <i class="fa-solid fa-circle-check"></i> TVCS Qualifying (Full-Time)
+                                <span class="eligibility-pill eligibility-qualifying" title="Position with an approved TVCS Category partner employer">
+                                    <i class="fa-solid fa-circle-check"></i> TVCS Qualifying Partner
+                                </span>
+                                ${job.Employment_Type ? `
+                                    <span style="background: #f1f5f9; color: var(--text-body); border: 1px solid var(--border-subtle); font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                        <i class="fa-regular fa-clock"></i> ${escapeHtml(job.Employment_Type)}
                                     </span>
-                                ` : `
-                                    <span class="eligibility-pill eligibility-non-qualifying" title="Part-time hours do not meet TVCS school admission criteria">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Part-Time (Non-Qualifying)
-                                    </span>
-                                `}
+                                ` : ''}
                             </div>
 
                             <h2 class="job-title">${escapeHtml(job.Job_Title)}</h2>
