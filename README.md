@@ -1,6 +1,6 @@
 # TVCS Qualifying Careers & Employer Search Engine
 
-An automated job aggregator and HiringCafe-style searchable dashboard designed specifically to help parents and job seekers find and apply to positions that qualify dependents for enrollment in **The Villages Charter School (TVCS)** under Florida statutory employment criteria (§ 1002.33, Categories I–IV).
+An automated job aggregator and searchable dashboard designed specifically to help parents and job seekers find and apply to positions that qualify dependents for enrollment in **The Villages Charter School (TVCS)** under Florida statutory employment criteria (§ 1002.33, Categories I–IV).
 
 ---
 
@@ -9,15 +9,10 @@ An automated job aggregator and HiringCafe-style searchable dashboard designed s
 1. **100% Verified, Real Postings (No Spam, No Fake Search Links)**:
    - Previous versions generated placeholder cards linking to general Google Search queries. 
    - Every single listing in this engine is an active, verified requisition sourced directly from official employer ATS portals (ADP Workforce Now, NEOGOV GovernmentJobs, Jacobs ATS).
-2. **HiringCafe-Inspired Search Experience**:
-   - Zero-latency, live client-side fuzzy search across job titles, schools, skills, departments, and commercial plazas.
-   - One-click direct application links that take candidates straight to the employer's official application form.
-   - Bookmarking & saved jobs system (stored in `localStorage`).
-   - One-click CSV export of filtered positions and approved businesses.
-3. **Dedicated TVCS Admission Qualification Filtering**:
+2. **Dedicated TVCS Admission Qualification Filtering**:
    - **Full-Time Only Switch**: Florida law and TVCS policy strictly require continuous full-time employment (30+ hours/week) for school admission eligibility. The engine flags qualifying full-time roles vs. non-qualifying part-time roles.
    - **Priority Tier Tagging**: Visual badges highlighting Category I (1st lottery priority), Category II (Subcontractors - 2nd priority), Category III (Commercial plaza tenants), and Category IV (Approved vendors).
-4. **Complete 432 Qualifying Employers Directory**:
+3. **Complete 432 Qualifying Employers Directory**:
    - Searchable directory of all 432 certified businesses across Lake Sumter Landing, Brownwood Paddock Square, Spanish Springs, Middleton Downtown, Magnolia Plaza, Sawgrass Grove, and Pinellas Plaza.
    - Shows active opening counts per company and provides direct links to each business's official career portal or contact page.
 
