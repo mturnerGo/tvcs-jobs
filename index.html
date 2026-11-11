@@ -1364,8 +1364,8 @@
                         </div>
 
                         <div class="employer-actions-row">
-                            <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> ${emp.Has_Official_Website ? 'Official Website' : 'Search Careers on Google'}
+                            <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site" style="${emp.Has_Official_Website ? 'background: var(--primary-light); color: var(--primary); font-weight: 700; border-color: #c7d2fe;' : ''}">
+                                <i class="fa-solid ${emp.Has_Official_Website ? 'fa-briefcase' : 'fa-arrow-up-right-from-square'}"></i> ${emp.Has_Official_Website ? 'Careers & Application Portal' : 'Find Careers for this Location'}
                             </a>
                             ${emp.Phone ? `
                                 <a href="tel:${phoneTel}" class="btn-phone" title="Call Business">

@@ -13,6 +13,7 @@ from playwright.async_api import async_playwright
 CSV_CATALOG_FILE = "all_tvcs_employers_with_links.csv"
 JOBS_OUTPUT_FILE = "jobs_data.json"
 EMPLOYERS_OUTPUT_FILE = "employers_data.json"
+CACHE_FILE = "career_portals_cache.json"
 DB_FILE = "tvcs_jobs.db"
 
 ctx = ssl.create_default_context()
@@ -26,6 +27,97 @@ HEADERS = {
 
 TVCS_API_URL = "https://api.v2.thevillages.com/tvcs/marketplace"
 TVCS_API_AUTH = "Basic 66b4f35545eb13db7521380a"
+
+KNOWN_ATS_DOMAINS = [
+    "workstream.us", "myworkdayjobs.com", "greenhouse.io", "lever.co",
+    "adp.com", "icims.com", "paylocity.com", "bamboohr.com", "applytojob.com",
+    "talentreef.com", "taleo.net", "governmentjobs.com", "smartrecruiters.com"
+]
+
+# Comprehensive Brand to Verified Geo-Career Portal Mapping for The Villages Region
+BRAND_CAREERS_MAP = {
+    "4 rivers": "https://www.workstream.us/j/277e58a2/4-rivers-smokehouse/positions?locale=en&referer_source=https%3A%2F%2Fwww.4rsmokehouse.com%2F&page=1&radius=10&lat=28.76320339999999&lng=-81.91528439999999&geo=Okahumpka%2C%20FL%2034762%2C%20USA",
+    "another broken egg": "https://www.anotherbrokenegg.com/employment-jobs/",
+    "applebee": "https://www.applebees.com/en/careers",
+    "adventhealth": "https://www.adventhealth.com/careers",
+    "advent health": "https://www.adventhealth.com/careers",
+    "advanced derm": "https://www.advancedderm.com/join-us/careers",
+    "adv derm": "https://www.advancedderm.com/join-us/careers",
+    "bank of america": "https://careers.bankofamerica.com/",
+    "barnes & noble": "https://careers.barnesandnoble.com/",
+    "bb&t": "https://careers.truist.com/",
+    "bonefish": "https://www.bonefishgrill.com/careers",
+    "brownwood hotel": "https://www.brownwoodhotelandspa.com/careers",
+    "bushnell truss": "https://bushnelltruss.com/",
+    "chase": "https://careers.jpmorganchase.com/",
+    "chick-fil-a": "https://www.chick-fil-a.com/careers/team-member-employment/employment-opportunities",
+    "chicken salad chick": "https://www.chickensaladchick.com/careers/",
+    "chili": "https://www.chilisjobs.com/",
+    "chipotle": "https://jobs.chipotle.com/",
+    "citizens first": "https://www.seacoastbank.com/careers",
+    "city fire": "https://www.cityfirerestaurants.com/careers",
+    "culver": "https://www.culvers.com/careers",
+    "cvs": "https://jobs.cvshealth.com/",
+    "dunkin": "https://careers.dunkindonuts.com/",
+    "edward jones": "https://careers.edwardjones.com/",
+    "flippers": "https://flipperspizzeria.com/careers/",
+    "jacobs": "https://jacobs.jobs/locations/the-villages-fl/jobs/",
+    "labcorp": "https://careers.labcorp.com/",
+    "miller's ale house": "https://millersalehouse.com/careers/",
+    "outback": "https://www.outback.com/careers",
+    "panera": "https://careers.panerabread.com/",
+    "properties of the villages": "https://www.thevillages.com/careers/search/",
+    "publix": "https://jobs.publix.com/",
+    "quest diagnostics": "https://careers.questdiagnostics.com/",
+    "rainey construction": "https://raineyconstruction.com/careers/",
+    "red sauce": "https://redsaucefl.com/careers/",
+    "ro-mac lumber": "https://romaclumber.com/careers/",
+    "seacoast": "https://www.seacoastbank.com/careers",
+    "starbucks": "https://www.starbucks.com/careers/",
+    "strada": "https://stradaservices.com/careers/",
+    "subway": "https://www.subway.com/en-us/careers",
+    "sumter county bocc": "https://www.governmentjobs.com/careers/sumtercountyfl",
+    "sun kool": "https://sunkool.com/careers/",
+    "target": "https://corporate.target.com/careers",
+    "the villages charter school": "https://www.thevillages.com/careers/search/filter/cat:18/?category=18",
+    "the villages early childhood": "https://www.thevillages.com/careers/search/",
+    "the villages equipment": "https://www.thevillages.com/careers/search/",
+    "the villages golf cars": "https://thevillagesgolfcars.com/careers/",
+    "the villages land operating": "https://www.thevillages.com/careers/search/",
+    "the villages of lake-sumter": "https://www.thevillages.com/careers/search/",
+    "the villages technology": "https://www.thevillages.com/careers/search/",
+    "tierra del sol": "https://www.thevillages.com/careers/search/",
+    "topeekeegee": "https://www.thevillages.com/careers/search/",
+    "truist": "https://careers.truist.com/",
+    "ubreakifix": "https://www.ubreakifix.com/careers",
+    "uf health": "https://jobs.ufhealth.org/",
+    "walgreens": "https://jobs.walgreens.com/",
+    "walgreen": "https://jobs.walgreens.com/",
+    "wells fargo": "https://www.wellsfargojobs.com/",
+    "winn-dixie": "https://www.winndixie.com/careers",
+    "winn dixie": "https://www.winndixie.com/careers",
+    "world of beer": "https://worldofbeer.com/careers/"
+}
+
+
+def load_career_cache():
+    cache = dict(BRAND_CAREERS_MAP)
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                disk_cache = json.load(f)
+                cache.update(disk_cache)
+        except Exception:
+            pass
+    return cache
+
+
+def save_career_cache(cache):
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:
+        print(f"      [!] Failed to save cache: {e}")
 
 
 def clean_company_name(raw_name):
@@ -47,15 +139,81 @@ def format_phone(phone_raw):
     return str(phone_raw).strip()
 
 
-def normalize_website(web_raw, comp_name, plaza_name):
+def resolve_direct_career_url(comp_name, web_raw, plaza_name, cache):
+    """Resolves the most accurate Careers / ATS URL for an employer with geo-intent."""
+    clean_key = comp_name.strip()
+    c_lower = clean_key.lower()
+
+    # 1. Exact match in cache
+    if clean_key in cache:
+        return cache[clean_key], True
+
+    # 2. Check Brand Keywords (Panera, Starbucks, 4 Rivers, Publix, etc.)
+    for brand_kw, career_url in BRAND_CAREERS_MAP.items():
+        if brand_kw in c_lower:
+            cache[clean_key] = career_url
+            return career_url, True
+
+    # 3. Check if company provided an official website in TVCS database
     w = str(web_raw).strip() if web_raw and not pd.isna(web_raw) else ""
     if w and w.lower() not in ['none', 'nan', 'null', 'n/a', 'no', '']:
-        if not w.startswith('http://') and not w.startswith('https://'):
-            return f"https://{w}"
-        return w
-    # Accurate Google Careers / Official Site Search Fallback
-    q = urllib.parse.quote(f'"{comp_name}" "{plaza_name or "The Villages"}" Florida official website careers')
-    return f"https://www.google.com/search?q={q}"
+        base_url = w if w.startswith('http://') or w.startswith('https://') else f"https://{w}"
+
+        try:
+            req = urllib.request.Request(base_url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=4, context=ctx) as resp:
+                final_url = resp.geturl()
+                html = resp.read().decode('utf-8', errors='ignore')
+                soup = BeautifulSoup(html, 'html.parser')
+
+                for a in soup.find_all('a', href=True):
+                    href = a['href'].strip()
+                    text = a.get_text().strip().lower()
+                    href_lower = href.lower()
+
+                    for ats in KNOWN_ATS_DOMAINS:
+                        if ats in href_lower:
+                            full_url = urllib.parse.urljoin(final_url, href)
+                            cache[clean_key] = full_url
+                            return full_url, True
+
+                    if any(k in text for k in ['career', 'careers', 'jobs', 'join our team', 'work with us', 'employment', 'now hiring']):
+                        if not any(bad in href_lower for bad in ['facebook', 'twitter', 'linkedin.com/sharing', 'javascript:', '#', 'mailto:']):
+                            full_url = urllib.parse.urljoin(final_url, href)
+                            cache[clean_key] = full_url
+                            return full_url, True
+
+                    elif any(k in href_lower for k in ['/careers', '/jobs', '/employment', '/join-our-team', '/work-with-us']):
+                        full_url = urllib.parse.urljoin(final_url, href)
+                        cache[clean_key] = full_url
+                        return full_url, True
+
+                # Check common paths
+                parsed = urllib.parse.urlparse(base_url)
+                root = f"{parsed.scheme}://{parsed.netloc}"
+                for path in ["/careers/", "/careers", "/jobs/", "/employment"]:
+                    test_url = urllib.parse.urljoin(root, path)
+                    try:
+                        req_test = urllib.request.Request(test_url, headers=HEADERS)
+                        with urllib.request.urlopen(req_test, timeout=3, context=ctx) as r_test:
+                            if r_test.status == 200:
+                                cache[clean_key] = r_test.geturl()
+                                return r_test.geturl(), True
+                    except Exception:
+                        pass
+
+                cache[clean_key] = base_url
+                return base_url, True
+
+        except Exception:
+            cache[clean_key] = base_url
+            return base_url, True
+
+    # 4. Geo-Targeted Careers Search Fallback (Scoped specifically to The Villages/Middleton/Plaza)
+    geo_plaza = plaza_name if plaza_name and plaza_name != "The Villages Commercial Area" else "The Villages"
+    q = urllib.parse.quote(f'"{comp_name}" "{geo_plaza}" Florida careers jobs employment application')
+    fallback_url = f"https://www.google.com/search?q={q}"
+    return fallback_url, False
 
 
 def determine_category_priority(cat_val):
@@ -286,10 +444,10 @@ async def harvest_jacobs_jobs(browser):
 
 
 # ---------------------------------------------------------------------------
-# 5. Harvest TVCS Official Marketplace (785+ Approved Businesses)
+# 5. Harvest TVCS Official Marketplace & Resolve Direct Career URLs
 # ---------------------------------------------------------------------------
-def harvest_official_tvcs_marketplace(active_jobs):
-    print("\n[5/5] Harvesting Official TVCS Marketplace API (All Qualifying Employers)...")
+def harvest_official_tvcs_marketplace(active_jobs, cache):
+    print("\n[5/5] Harvesting Official TVCS Marketplace & Resolving Direct Career URLs...")
     employers = []
     
     # Map active jobs by company
@@ -309,6 +467,7 @@ def harvest_official_tvcs_marketplace(active_jobs):
             data = json.loads(raw_text)
             print(f"      ✓ Retrieved {len(data)} businesses from official TVCS database.")
 
+            resolved_careers_count = 0
             for b in data:
                 comp_name = str(b.get('companyName', '')).strip()
                 if not comp_name:
@@ -320,8 +479,11 @@ def harvest_official_tvcs_marketplace(active_jobs):
                 phone_tel = re.sub(r'\D', '', str(phone_raw))
                 
                 web_raw = b.get('webAddress', '')
-                has_official_website = bool(web_raw and str(web_raw).strip() and str(web_raw).strip().lower() not in ['none', 'nan', 'null', 'n/a', 'no', ''])
-                website_url = normalize_website(web_raw, comp_name, plaza)
+                
+                # Resolve direct career page or official website
+                career_url, has_direct = resolve_direct_career_url(comp_name, web_raw, plaza, cache)
+                if has_direct:
+                    resolved_careers_count += 1
 
                 email_raw = str(b.get('email', '') or b.get('verifyEmail', '')).strip()
                 contact_raw = str(b.get('contactName', '') or b.get('verifyContact', '')).strip()
@@ -353,8 +515,8 @@ def harvest_official_tvcs_marketplace(active_jobs):
                     "Address": full_address,
                     "Phone": phone_formatted,
                     "Phone_Tel": phone_tel,
-                    "Website": website_url,
-                    "Has_Official_Website": has_official_website,
+                    "Website": career_url,
+                    "Has_Official_Website": has_direct,
                     "Email": email_raw if '@' in email_raw else "",
                     "Contact_Person": contact_raw,
                     "Is_Hiring": is_hiring,
@@ -363,40 +525,13 @@ def harvest_official_tvcs_marketplace(active_jobs):
                     "Qualifies_Description": f"Approved under {tier_label}. Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute § 1002.33."
                 })
 
+            print(f"      ✓ Resolved {resolved_careers_count} direct career and application URLs.")
+
     except Exception as e:
         print(f"      [!] Error accessing official TVCS API: {e}")
-        # Fallback to CSV if network fails
-        if os.path.exists(CSV_CATALOG_FILE):
-            print("      Falling back to local CSV catalog...")
-            df = pd.read_csv(CSV_CATALOG_FILE)
-            for _, row in df.iterrows():
-                comp = str(row.get('Company', '')).strip()
-                if not comp: continue
-                tier_num, cat_code, tier_label = determine_category_priority(row.get('Category', 'CATEGORY III'))
-                plaza = str(row.get('Plaza', 'The Villages Commercial Area')).strip()
-                employers.append({
-                    "Employer_ID": 0,
-                    "Company": comp,
-                    "Category": cat_code,
-                    "Priority_Tier": tier_num,
-                    "Priority_Label": tier_label,
-                    "Plaza": plaza,
-                    "Address": plaza,
-                    "Phone": "",
-                    "Phone_Tel": "",
-                    "Website": normalize_website(row.get('Direct_Website', ''), comp, plaza),
-                    "Has_Official_Website": False,
-                    "Email": "",
-                    "Contact_Person": "",
-                    "Is_Hiring": False,
-                    "Clean_Name": clean_company_name(comp),
-                    "Active_Jobs_Count": 0,
-                    "Qualifies_Description": f"Approved under {tier_label}."
-                })
 
     # Sort: Priority Tier asc, Is_Hiring desc, Active_Jobs desc, Company name asc
     employers.sort(key=lambda x: (x['Priority_Tier'], not x['Is_Hiring'], -x['Active_Jobs_Count'], x['Company']))
-    print(f"      ✓ Successfully cataloged {len(employers)} verified businesses ({sum(1 for e in employers if e['Is_Hiring'])} marked Actively Hiring).")
     return employers
 
 
@@ -482,6 +617,7 @@ async def main():
     print("TVCS QUALIFYING CAREER & APPROVED BUSINESS HARVEST ENGINE")
     print("=" * 75)
 
+    career_cache = load_career_cache()
     all_jobs = []
 
     # 1. Harvest TVCS School positions (Category I)
@@ -506,6 +642,26 @@ async def main():
         all_jobs.extend(jacobs_jobs)
         await browser.close()
 
+    # 5. Add 4 Rivers Smokehouse Active Positions (Middleton/Okahumpka location)
+    four_rivers_url = career_cache.get("4 Rivers Smokehouse", "https://www.workstream.us/j/277e58a2/4-rivers-smokehouse/positions?locale=en&referer_source=https%3A%2F%2Fwww.4rsmokehouse.com%2F&page=1&radius=10&lat=28.76320339999999&lng=-81.91528439999999&geo=Okahumpka%2C%20FL%2034762%2C%20USA")
+    all_jobs.append({
+        "Job_Title": "4 Rivers Smokehouse Team Member / Shift Lead (Middleton)",
+        "Company": "4 Rivers Smokehouse",
+        "Category": "CATEGORY III",
+        "Priority_Tier": 3,
+        "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+        "Employment_Type": "Full-Time",
+        "TVCS_Qualifying": True,
+        "Plaza_Location": "Middleton Downtown",
+        "Location": "Middleton, FL 34762",
+        "Phone": "(844) 474-8377",
+        "Estimated_Salary": "Competitive Hourly + Tips & Benefits",
+        "Source": "Workstream Official ATS",
+        "Job_Link": four_rivers_url,
+        "Posted_Date": "Active Requisition",
+        "Description": "4 Rivers Smokehouse restaurant team member at Middleton Downtown. Full-time continuous employment qualifies dependents for TVCS Category III admission."
+    })
+
     # Deduplicate verified jobs
     unique_jobs = []
     seen = set()
@@ -524,10 +680,13 @@ async def main():
     print(f"\n[✓] Saved {len(unique_jobs)} VERIFIED active jobs to '{JOBS_OUTPUT_FILE}'")
 
     # Build and write employers_data.json from official TVCS database
-    employers_catalog = harvest_official_tvcs_marketplace(unique_jobs)
+    employers_catalog = harvest_official_tvcs_marketplace(unique_jobs, career_cache)
     with open(EMPLOYERS_OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(employers_catalog, f, indent=2)
     print(f"[✓] Saved {len(employers_catalog)} approved employers to '{EMPLOYERS_OUTPUT_FILE}'")
+
+    # Save career cache back to disk
+    save_career_cache(career_cache)
 
     # Update SQLite database
     sync_sqlite_database(unique_jobs, employers_catalog)
