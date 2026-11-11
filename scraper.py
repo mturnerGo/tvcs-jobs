@@ -1,240 +1,410 @@
 import asyncio
 import os
 import re
+import json
+import sqlite3
+import urllib.request
 import urllib.parse
+import ssl
 import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
-from playwright_stealth import Stealth
 
-TVCS_DIRECTORY_URL = "https://www.tvcs.org/admission/qualifying-businesses/"
-LOCATION = "The Villages, FL"
-SEARCH_RADIUS_MILES = "25"
-MIN_ANNUAL_SALARY = 100000
-MAX_CONCURRENT_PAGES = 3
-BATCH_SIZE = 5
+CSV_CATALOG_FILE = "all_tvcs_employers_with_links.csv"
+JOBS_OUTPUT_FILE = "jobs_data.json"
+EMPLOYERS_OUTPUT_FILE = "employers_data.json"
+DB_FILE = "tvcs_jobs.db"
 
-ROLE_KEYWORDS = [
-    "network", "software", "project manager", "customer service",
-    "systems", "infrastructure", "devops", "cloud", "technical support",
-    "solutions architect", "engineer", "administrator", "coordinator", "manager"
-]
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
-CATEGORY_1_DIRECT_PORTALS = [
-    {
-        "name": "The Villages Technology Solutions Group",
-        "url": "https://www.thevillages.com/careers/search/jsf/jet-engine:career-listing/meta/cat:23/",
-        "category": "CATEGORY I"
-    },
-    {
-        "name": "Properties of The Villages / Commercial",
-        "url": "https://www.thevillages.com/careers/search/jsf/jet-engine:career-listing/meta/cat:8/",
-        "category": "CATEGORY I"
-    }
-]
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*'
+}
+
 
 def clean_company_name(raw_name):
-    name = re.sub(r"(?i)\b(inc|llc|corp|ltd|co|group|dba|pa|pllc)\b\.?", "", raw_name)
-    return name.split("/")[0].split("-")[0].strip()
+    if not raw_name or pd.isna(raw_name):
+        return ""
+    name = re.sub(r"(?i)\b(inc|llc|corp|ltd|co|group|dba|pa|pllc|the|florida|solutions)\b\.?", "", str(raw_name))
+    name = re.sub(r"[^\w\s]", "", name)
+    return " ".join(name.strip().split())
 
-def parse_salary(salary_str):
-    if not salary_str:
-        return None
-    clean = salary_str.replace(",", "").lower()
-    if "hour" in clean or "hr" in clean:
-        matches = [float(v) for v in re.findall(r"\$?(\d+(?:\.\d+)?)", clean)]
-        if matches:
-            return max(matches) * 2080
-    annual = [float(v) for v in re.findall(r"\$?(\d{4,7})", clean)]
-    return max(annual) if annual else None
 
-def extract_businesses_from_html(html, current_category_label):
-    soup = BeautifulSoup(html, "html.parser")
-    entries = []
-    text_content = soup.get_text(separator="\n")
-    chunks = re.split(r"(?=\n[^\n]+\nCategory\s+(?:I{1,3}|IV))", text_content)
+def determine_category_priority(category_str):
+    cat = str(category_str).upper()
+    if "CATEGORY I" in cat and "II" not in cat and "III" not in cat and "IV" not in cat:
+        return 1, "Category I (Direct - 1st Priority)"
+    elif "CATEGORY II" in cat:
+        return 2, "Category II (Subcontractor - 2nd Priority)"
+    elif "CATEGORY III" in cat:
+        return 3, "Category III (Commercial Tenant - 3rd Priority)"
+    elif "CATEGORY IV" in cat:
+        return 4, "Category IV (Approved Vendor - 4th Priority)"
+    return 3, "Category III (Commercial Tenant)"
 
-    for chunk in chunks:
-        lines = [l.strip() for l in chunk.split("\n") if l.strip()]
-        if not lines:
-            continue
-        cat_match = re.search(r"Category\s+(I{1,3}|IV)", chunk, re.IGNORECASE)
-        cat_tag = cat_match.group(0).upper() if cat_match else f"CATEGORY {current_category_label}"
-        raw_company = lines[0]
-        company = re.sub(r"(?i)now hiring|hiring only", "", raw_company).strip()
 
-        if company and len(company) < 80:
-            entries.append({
-                "Company": company,
-                "Clean_Name": clean_company_name(company),
-                "Category": cat_tag
+def is_full_time(title_str, work_type_str=""):
+    combined = f"{title_str} {work_type_str}".lower()
+    if any(pt in combined for pt in ["part-time", "part time", "prn", "substitute", "temporary", "temp "]):
+        return False
+    return True
+
+
+# ---------------------------------------------------------------------------
+# 1. Harvest The Villages Charter School (TVCS) Direct Positions (Category I)
+# ---------------------------------------------------------------------------
+def harvest_tvcs_jobs():
+    print("\n[1/4] Harvesting The Villages Charter School (TVCS) Requisitions...")
+    jobs = []
+    tvcs_cid = "9d9691d5-3462-4689-a406-011d044de96e"
+    api_url = f"https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={tvcs_cid}&timeStamp=1000"
+    try:
+        req = urllib.request.Request(api_url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for req_item in data.get('jobRequisitions', []):
+                title = req_item.get('requisitionTitle', '').strip()
+                item_id = req_item.get('itemID', '')
+                if not title or not item_id:
+                    continue
+
+                full_time = is_full_time(title)
+                campus = "Buffalo Ridge Campus" if "buffalo" in title.lower() else ("Middleton Campus" if "middleton" in title.lower() else "All TVCS Campuses")
+                apply_link = f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={tvcs_cid}&jobId={item_id}"
+                
+                jobs.append({
+                    "Job_Title": title,
+                    "Company": "The Villages Charter School",
+                    "Category": "CATEGORY I",
+                    "Priority_Tier": 1,
+                    "Priority_Label": "Category I (Direct - 1st Priority)",
+                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                    "TVCS_Qualifying": full_time,
+                    "Plaza_Location": f"TVCS {campus}",
+                    "Location": "The Villages, FL",
+                    "Estimated_Salary": "TVCS Instructional/Staff Scale + Benefits" if full_time else "Hourly Scale",
+                    "Source": "The Villages Charter School (Official ATS)",
+                    "Job_Link": apply_link,
+                    "Posted_Date": req_item.get('postDate', '')[:10] if req_item.get('postDate') else "Recent",
+                    "Description": f"Official position at The Villages Charter School ({campus}). Full-time positions qualify dependents for Category I TVCS enrollment priority."
+                })
+        print(f"      ✓ TVCS: Captured {len(jobs)} active school positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting TVCS jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 2. Harvest The Villages Operating Entities Positions (Category I)
+# ---------------------------------------------------------------------------
+def harvest_the_villages_operating_jobs():
+    print("\n[2/4] Harvesting The Villages Operating Entities...")
+    jobs = []
+    v_cid = "ea774d00-96ec-4432-b137-9f604cbb5c8e"
+    api_url = f"https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={v_cid}&timeStamp=1000"
+    try:
+        req = urllib.request.Request(api_url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for req_item in data.get('jobRequisitions', []):
+                title = req_item.get('requisitionTitle', '').strip()
+                item_id = req_item.get('itemID', '')
+                if not title or not item_id:
+                    continue
+
+                full_time = is_full_time(title)
+                locs = req_item.get('requisitionLocations', [])
+                loc_name = "The Villages, FL"
+                plaza = "The Villages Commercial Area"
+                if locs and 'nameCode' in locs[0]:
+                    loc_name = locs[0]['nameCode'].get('shortName', 'The Villages, FL').strip()
+                
+                t_lower = title.lower()
+                if "lake sumter" in t_lower:
+                    plaza = "Lake Sumter Landing"
+                elif "spanish springs" in t_lower:
+                    plaza = "Spanish Springs"
+                elif "brownwood" in t_lower:
+                    plaza = "Brownwood Paddock Square"
+                elif "middleton" in t_lower or "middleton" in loc_name.lower():
+                    plaza = "Middleton Downtown"
+                elif "eastport" in t_lower:
+                    plaza = "Eastport Town Center"
+
+                apply_link = f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={v_cid}&jobId={item_id}"
+                
+                jobs.append({
+                    "Job_Title": title,
+                    "Company": "The Villages Operating Entities",
+                    "Category": "CATEGORY I",
+                    "Priority_Tier": 1,
+                    "Priority_Label": "Category I (Direct - 1st Priority)",
+                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                    "TVCS_Qualifying": full_time,
+                    "Plaza_Location": plaza,
+                    "Location": loc_name,
+                    "Estimated_Salary": "Competitive Enterprise Scale + Benefits" if full_time else "Hourly Scale",
+                    "Source": "The Villages Careers (Official ATS)",
+                    "Job_Link": apply_link,
+                    "Posted_Date": req_item.get('postDate', '')[:10] if req_item.get('postDate') else "Recent",
+                    "Description": f"Direct position with The Villages Operating Entities in {plaza}. Full-time employees receive Category I enrollment eligibility."
+                })
+        print(f"      ✓ The Villages: Captured {len(jobs)} active positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting The Villages operating jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 3. Harvest Sumter County BOCC Public Jobs (Category II)
+# ---------------------------------------------------------------------------
+def harvest_sumter_county_jobs():
+    print("\n[3/4] Harvesting Sumter County BOCC (Category II)...")
+    jobs = []
+    gov_url = 'https://www.governmentjobs.com/careers/home/index?agency=sumtercountyfl&sort=PositionTitle&isDescendingSort=false'
+    gov_headers = dict(HEADERS)
+    gov_headers['X-Requested-With'] = 'XMLHttpRequest'
+    try:
+        req = urllib.request.Request(gov_url, headers=gov_headers)
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            content = resp.read().decode('utf-8', errors='ignore')
+            soup = BeautifulSoup(content, 'html.parser')
+            for a in soup.select('a[href*="/careers/sumtercountyfl/jobs/"]'):
+                title = a.get_text().strip()
+                href = a.get('href', '')
+                if not title or not href:
+                    continue
+                link = href if href.startswith('http') else f"https://www.governmentjobs.com{href}"
+                if any(x['Job_Link'] == link for x in jobs):
+                    continue
+
+                full_time = is_full_time(title)
+                jobs.append({
+                    "Job_Title": title,
+                    "Company": "Sumter County BOCC",
+                    "Category": "CATEGORY II",
+                    "Priority_Tier": 2,
+                    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
+                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                    "TVCS_Qualifying": full_time,
+                    "Plaza_Location": "Sumter County Government Complex",
+                    "Location": "The Villages / Sumter County, FL",
+                    "Estimated_Salary": "County Public Scale & FRS Pension",
+                    "Source": "GovernmentJobs (NEOGOV)",
+                    "Job_Link": link,
+                    "Posted_Date": "Active Requisition",
+                    "Description": "Sumter County Board of County Commissioners operational support role. Full-time continuous positions qualify for TVCS Category II admission."
+                })
+        print(f"      ✓ Sumter County: Captured {len(jobs)} active positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting Sumter County jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 4. Harvest Jacobs Engineering (Category II)
+# ---------------------------------------------------------------------------
+async def harvest_jacobs_jobs(browser):
+    print("\n[4/4] Harvesting Jacobs Engineering & Infrastructure (Category II)...")
+    jobs = []
+    page = await browser.new_page()
+    try:
+        await page.goto("https://jacobs.jobs/locations/the-villages-fl/jobs/", wait_until="domcontentloaded", timeout=25000)
+        await page.wait_for_timeout(3000)
+        raw_list = await page.evaluate('''() => {
+            const list = [];
+            document.querySelectorAll('li.job, div.job-card, tr.job-row, a[href*="/job/"]').forEach(el => {
+                const titleEl = el.querySelector('h3, h2, a') || el;
+                const title = titleEl.innerText ? titleEl.innerText.trim() : '';
+                const href = el.getAttribute('href') || (el.querySelector('a') ? el.querySelector('a').getAttribute('href') : '');
+                if (title && href && title.length < 90 && !title.toLowerCase().includes('filter')) {
+                    list.push({ title: title.split('\\n')[0], url: href.startsWith('http') ? href : `https://jacobs.jobs${href}` });
+                }
+            });
+            return list;
+        }''')
+        for item in raw_list:
+            title = item['title']
+            url = item['url']
+            if any(x['Job_Link'] == url for x in jobs):
+                continue
+            full_time = is_full_time(title)
+            jobs.append({
+                "Job_Title": title,
+                "Company": "Jacobs Engineering & Utilities",
+                "Category": "CATEGORY II",
+                "Priority_Tier": 2,
+                "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
+                "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                "TVCS_Qualifying": full_time,
+                "Plaza_Location": "The Villages Utility Operations",
+                "Location": "The Villages, FL",
+                "Estimated_Salary": "Competitive Engineering / Technical Scale",
+                "Source": "Jacobs Official ATS",
+                "Job_Link": url,
+                "Posted_Date": "Active Requisition",
+                "Description": "Jacobs direct operational utility and engineering subcontracting for The Villages. Qualifies for Category II admission."
             })
-    return entries
+        print(f"      ✓ Jacobs: Captured {len(jobs)} active positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting Jacobs jobs: {e}")
+    finally:
+        await page.close()
+    return jobs
 
-async def block_media(route):
-    if route.request.resource_type in ["image", "media", "font", "stylesheet"]:
-        await route.abort()
-    else:
-        await route.continue_()
 
-async def scrape_all_tvcs_categories(page):
-    print(f"[1/3] Loading TVCS Marketplace Directory...")
-    await page.goto(TVCS_DIRECTORY_URL, wait_until="domcontentloaded", timeout=45000)
-    await page.wait_for_timeout(2500)
-    all_employers = []
+# ---------------------------------------------------------------------------
+# 5. Build TVCS Approved Employers Catalog (All 432 Qualifying Businesses)
+# ---------------------------------------------------------------------------
+def build_approved_employers_catalog(active_jobs):
+    print("\n[5/5] Building Approved Employers Catalog (All 432 Businesses)...")
+    if not os.path.exists(CSV_CATALOG_FILE):
+        print(f"      [!] Error: {CSV_CATALOG_FILE} not found.")
+        return []
 
-    for cat in ["I", "II", "III", "IV"]:
-        print(f"      Scanning Category {cat}...")
-        cat_btn = page.locator(f"button.filter-button:has-text('{cat}'), button:text-is('{cat}')")
-        if await cat_btn.count() > 0:
-            await cat_btn.first.click()
-            await page.wait_for_timeout(1500)
-        else:
+    df = pd.read_csv(CSV_CATALOG_FILE)
+    employers = []
+    
+    # Map active jobs count by company
+    job_counts = {}
+    for j in active_jobs:
+        comp = j['Company'].lower()
+        job_counts[comp] = job_counts.get(comp, 0) + 1
+
+    for _, row in df.iterrows():
+        comp_name = str(row.get('Company', '')).strip()
+        if not comp_name:
             continue
+        category = str(row.get('Category', 'CATEGORY III')).strip()
+        plaza = str(row.get('Plaza', 'The Villages Commercial Area')).strip()
+        clean = str(row.get('clean', '')).strip() or clean_company_name(comp_name)
+        tier_num, tier_label = determine_category_priority(category)
+        direct_site = str(row.get('Direct_Website', '')).strip()
+        if not direct_site or direct_site == 'nan' or not direct_site.startswith('http'):
+            direct_site = f"https://www.google.com/search?q={urllib.parse.quote(comp_name + ' The Villages Florida')}"
 
-        current_page = 1
-        cat_employers = []
-        while True:
-            html = await page.content()
-            new_entries = extract_businesses_from_html(html, cat)
-            existing_names = {e["Company"] for e in cat_employers}
-            for entry in new_entries:
-                if entry["Company"] not in existing_names:
-                    cat_employers.append(entry)
-                    existing_names.add(entry["Company"])
+        # Match active jobs count
+        active_count = 0
+        for comp_key, count in job_counts.items():
+            if clean in comp_key or comp_name.lower() in comp_key or comp_key in comp_name.lower():
+                active_count += count
 
-            next_target = current_page + 1
-            page_btn = page.locator(f".mp-page-number:has-text('{next_target}'), div.mp-page-number:text-is('{next_target}')")
-            if await page_btn.count() > 0 and await page_btn.first.is_visible():
-                await page_btn.first.click(force=True)
-                current_page += 1
-                await page.wait_for_timeout(1200)
-            else:
-                break
-        all_employers.extend(cat_employers)
+        employers.append({
+            "Company": comp_name,
+            "Category": category,
+            "Priority_Tier": tier_num,
+            "Priority_Label": tier_label,
+            "Plaza": plaza,
+            "Clean_Name": clean,
+            "Website": direct_site,
+            "Active_Jobs_Count": active_count,
+            "Qualifies_Description": f"Approved under {tier_label}. Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute."
+        })
 
-    df = pd.DataFrame(all_employers).drop_duplicates(subset=["Company"])
-    print(f"[✓] Extracted {len(df)} total employers across Categories I–IV.")
-    return df
+    employers.sort(key=lambda x: (x['Priority_Tier'], -x['Active_Jobs_Count'], x['Company']))
+    print(f"      ✓ Processed {len(employers)} approved employers into catalog.")
+    return employers
 
-async def scrape_direct_portals(page):
-    print("\n[2/3] Checking Direct Category 1 Villages Portals...")
-    direct_matches = []
-    for portal in CATEGORY_1_DIRECT_PORTALS:
-        try:
-            await page.goto(portal["url"], wait_until="domcontentloaded", timeout=25000)
-            await page.wait_for_timeout(2000)
-            soup = BeautifulSoup(await page.content(), "html.parser")
-            cards = soup.select(".jet-listing-grid__item, .elementor-post, article")
-            for card in cards:
-                text = card.get_text(separator=" ").strip()
-                title_el = card.select_one("h2, h3, .jet-listing-dynamic-field__content")
-                title = title_el.get_text().strip() if title_el else "Tech Role"
-                link_el = card.select_one("a[href*='/careers/']")
-                job_link = link_el["href"] if link_el and link_el.has_attr("href") else portal["url"]
 
-                if any(kw in text.lower() for kw in ROLE_KEYWORDS):
-                    direct_matches.append({
-                        "Source": "Direct ATS",
-                        "Category": portal["category"],
-                        "Company": portal["name"],
-                        "Job_Title": title,
-                        "Estimated_Salary": "Unlisted (Enterprise Scale)",
-                        "Location": "The Villages, FL",
-                        "Job_Link": job_link
-                    })
-                    print(f"      ✓ Direct Match: {title} @ {portal['name']}")
-        except Exception:
-            pass
-    return direct_matches
+# ---------------------------------------------------------------------------
+# 6. Database Synchronization (SQLite)
+# ---------------------------------------------------------------------------
+def sync_sqlite_database(unique_jobs, employers_catalog):
+    print("\nSynchronizing SQLite Database (tvcs_jobs.db)...")
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
 
-async def search_google_jobs_batch(context, batch_items, sem):
-    async with sem:
-        page = await context.new_page()
-        await page.route("**/*", block_media)
-        company_subquery = " OR ".join([f'"{item["Clean_Name"]}"' for item in batch_items if item["Clean_Name"]])
-        roles_subquery = '("network" OR "software" OR "project manager" OR "customer service" OR "systems" OR "engineer")'
-        query = f'({company_subquery}) {roles_subquery} "The Villages, FL"'
-        search_url = f"https://www.google.com/search?q={urllib.parse.quote(query)}&ibp=htl;jobs"
+        # Update employers table
+        cursor.execute("CREATE TABLE IF NOT EXISTS employers (id INTEGER PRIMARY KEY AUTOINCREMENT, company TEXT NOT NULL UNIQUE, category TEXT NOT NULL, direct_website TEXT, plaza TEXT, clean_name TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+        cursor.execute("DELETE FROM employers")
+        for emp in employers_catalog:
+            cursor.execute(
+                "INSERT INTO employers (company, category, direct_website, plaza, clean_name) VALUES (?, ?, ?, ?, ?)",
+                (emp['Company'], emp['Category'], emp['Website'], emp['Plaza'], emp['Clean_Name'])
+            )
 
-        matches = []
-        try:
-            await page.goto(search_url, wait_until="domcontentloaded", timeout=20000)
-            await page.wait_for_timeout(1500)
-            soup = BeautifulSoup(await page.content(), "html.parser")
-            job_cards = soup.select("li.PUpOsf, div.gws-plugins-horizon-jobs__li-ed, div.s3tdad")
+        # Update job_postings table
+        cursor.execute("CREATE TABLE IF NOT EXISTS job_postings (id INTEGER PRIMARY KEY AUTOINCREMENT, source TEXT, category TEXT NOT NULL, company TEXT NOT NULL, job_title TEXT NOT NULL, estimated_salary TEXT, location TEXT, plaza_location TEXT, job_link TEXT NOT NULL UNIQUE, direct_employer_url TEXT, first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+        cursor.execute("DELETE FROM job_postings")
+        for j in unique_jobs:
+            cursor.execute(
+                "INSERT OR REPLACE INTO job_postings (source, category, company, job_title, estimated_salary, location, plaza_location, job_link, direct_employer_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (j['Source'], j['Category'], j['Company'], j['Job_Title'], j['Estimated_Salary'], j['Location'], j['Plaza_Location'], j['Job_Link'], j['Job_Link'])
+            )
 
-            for card in job_cards:
-                title_el = card.select_one("div.BjJfJf, .KLsYvd, div[role='heading']")
-                job_title = title_el.get_text().strip() if title_el else ""
-                comp_el = card.select_one("div.vNEEBe, .nJlQNd")
-                comp_name = comp_el.get_text().strip() if comp_el else "Qualifying Business"
-                snippet_el = card.select_one("div.HBtIp, div.I2Cbhb")
-                snippet = snippet_el.get_text(separator=" ").strip() if snippet_el else ""
+        conn.commit()
+        conn.close()
+        print(f"      ✓ Synced {len(employers_catalog)} employers and {len(unique_jobs)} jobs to {DB_FILE}")
+    except Exception as e:
+        print(f"      [!] SQLite Sync Error: {e}")
 
-                if any(kw in f"{job_title} {snippet}".lower() for kw in ROLE_KEYWORDS):
-                    matched_category = "Qualifying Tier"
-                    for item in batch_items:
-                        if item["Clean_Name"].lower() in comp_name.lower():
-                            matched_category = item["Category"]
-                            break
-                    matches.append({
-                        "Source": "Google Jobs / Direct ATS",
-                        "Category": matched_category,
-                        "Company": comp_name,
-                        "Job_Title": job_title,
-                        "Estimated_Salary": "Check ATS Posting",
-                        "Location": "The Villages / Sumter County, FL",
-                        "Job_Link": search_url
-                    })
-                    print(f"      ✓ Aggregator Match: {job_title} @ {comp_name} ({matched_category})")
-        except Exception:
-            pass
-        finally:
-            await page.close()
-        return matches
 
+# ---------------------------------------------------------------------------
+# Main Execution Pipeline
+# ---------------------------------------------------------------------------
 async def main():
-    stealth = Stealth()
-    all_results = []
+    print("=" * 70)
+    print("TVCS QUALIFYING CAREER DISCOVERY & HARVEST ENGINE")
+    print("=" * 70)
 
+    all_jobs = []
+
+    # 1. Harvest TVCS School positions (Category I)
+    tvcs_jobs = harvest_tvcs_jobs()
+    all_jobs.extend(tvcs_jobs)
+
+    # 2. Harvest The Villages Operating Entities (Category I)
+    villages_jobs = harvest_the_villages_operating_jobs()
+    all_jobs.extend(villages_jobs)
+
+    # 3. Harvest Sumter County BOCC (Category II)
+    sumter_jobs = harvest_sumter_county_jobs()
+    all_jobs.extend(sumter_jobs)
+
+    # 4. Harvest Jacobs Engineering (Category II)
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled", "--no-sandbox"])
-        context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
-
-        # 1. TVCS Directory
-        dir_page = await context.new_page()
-        await stealth.apply_stealth_async(dir_page)
-        df_employers = await scrape_all_tvcs_categories(dir_page)
-        await dir_page.close()
-
-        # 2. Direct Category 1 Portals
-        direct_page = await context.new_page()
-        await stealth.apply_stealth_async(direct_page)
-        direct_jobs = await scrape_direct_portals(direct_page)
-        all_results.extend(direct_jobs)
-        await direct_page.close()
-
-        # 3. Aggregated Search Batches
-        print("\n[3/3] Scanning ATS & Aggregators for extracted businesses...")
-        employers = df_employers.to_dict("records")
-        batches = [employers[i:i + BATCH_SIZE] for i in range(0, len(employers), BATCH_SIZE)]
-        sem = asyncio.Semaphore(MAX_CONCURRENT_PAGES)
-        tasks = [search_google_jobs_batch(context, b, sem) for b in batches]
-        nested = await asyncio.gather(*tasks)
-        for sub in nested:
-            all_results.extend(sub)
-
+        browser = await p.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        )
+        jacobs_jobs = await harvest_jacobs_jobs(browser)
+        all_jobs.extend(jacobs_jobs)
         await browser.close()
 
-    # 4. Final Export
-    if all_results:
-        df = pd.DataFrame(all_results).drop_duplicates(subset=["Job_Title", "Company"])
-        df.to_json("jobs_data.json", orient="records", indent=2)
-        df.to_csv("all_categories_all_sources_jobs.csv", index=False)
-        print(f"\n[✓] Finished. Exported {len(df)} opportunities to 'jobs_data.json' and CSV.")
-    else:
-        print("\nNo matching positions found in this run.")
+    # Deduplicate verified jobs
+    unique_jobs = []
+    seen = set()
+    for j in all_jobs:
+        sig = (j['Job_Title'].strip().lower(), j['Company'].strip().lower())
+        if sig not in seen:
+            seen.add(sig)
+            unique_jobs.append(j)
 
-if __name__ == "__main__":
+    # Sort jobs by Priority Tier, Full-Time first, then Title
+    unique_jobs.sort(key=lambda x: (x['Priority_Tier'], not x['TVCS_Qualifying'], x['Job_Title']))
+
+    # Write jobs_data.json
+    with open(JOBS_OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(unique_jobs, f, indent=2)
+    print(f"\n[✓] Saved {len(unique_jobs)} VERIFIED active jobs to '{JOBS_OUTPUT_FILE}'")
+
+    # Build and write employers_data.json
+    employers_catalog = build_approved_employers_catalog(unique_jobs)
+    with open(EMPLOYERS_OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(employers_catalog, f, indent=2)
+    print(f"[✓] Saved {len(employers_catalog)} approved employers to '{EMPLOYERS_OUTPUT_FILE}'")
+
+    # Update SQLite database
+    sync_sqlite_database(unique_jobs, employers_catalog)
+
+    print("\n" + "=" * 70)
+    print(f"HARVEST SUCCESS: {len(unique_jobs)} Verified Active Jobs | {len(employers_catalog)} Approved Employers")
+    print("=" * 70)
+
+
+if __name__ == '__main__':
     asyncio.run(main())

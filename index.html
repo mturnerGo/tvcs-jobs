@@ -1,117 +1,1358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TVCS Qualifying Careers Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased font-sans" x-data="jobPortal()" x-init="loadJobs()">
-  <header class="bg-indigo-950 text-white sticky top-0 z-50 border-b border-indigo-900 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-      <div>
-        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
-          <i class="fa-solid fa-graduation-cap text-indigo-400"></i> TVCS Qualifying Careers
-        </h1>
-        <p class="text-xs text-indigo-200">The Villages Charter School Admission Qualifying Employer Index</p>
-      </div>
-      <div class="text-xs text-indigo-300">
-        Live Database • <span class="text-emerald-400 font-semibold" x-text="jobs.length + ' Available Roles'"></span>
-      </div>
-    </div>
-  </header>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVCS Qualifying Careers & Employer Search Engine</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="md:col-span-2 relative">
-          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Live Keyword Search</label>
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
-            <input type="text" x-model="searchQuery" placeholder="Search role, company, or area (e.g. Network, Project Manager, Comcast)..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Category Priority</label>
-          <select x-model="selectedCat" class="w-full py-2 px-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white">
-            <option value="ALL">All Categories (I - IV)</option>
-            <option value="CATEGORY I">Category I (Direct Villages / Top Priority)</option>
-            <option value="CATEGORY II">Category II (Direct Subcontractors)</option>
-            <option value="CATEGORY III">Category III (Commercial Tenants)</option>
-            <option value="CATEGORY IV">Category IV (Approved Vendors)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <template x-for="job in filteredJobs" :key="job.Job_Link + job.Job_Title">
-        <div class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2 py-0.5 rounded text-[11px] font-bold border"
-                :class="{
-                  'bg-emerald-50 text-emerald-800 border-emerald-300': job.Category.includes('I') && !job.Category.includes('II') && !job.Category.includes('IV'),
-                  'bg-blue-50 text-blue-800 border-blue-300': job.Category.includes('II'),
-                  'bg-purple-50 text-purple-800 border-purple-300': job.Category.includes('III'),
-                  'bg-slate-50 text-slate-700 border-slate-300': job.Category.includes('IV')
-                }"
-                x-text="job.Category"
-              ></span>
-              <span class="text-[11px] text-slate-400 font-medium" x-text="job.Source || 'Direct Portal'"></span>
-            </div>
-            <h2 class="text-base font-bold text-slate-900 line-clamp-2" x-text="job.Job_Title"></h2>
-            <p class="text-sm font-semibold text-slate-700 mt-1 flex items-center">
-              <i class="fa-regular fa-building text-slate-400 mr-2 text-xs"></i>
-              <span x-text="job.Company"></span>
-            </p>
-            <p class="text-xs text-slate-500 mt-1 flex items-center">
-              <i class="fa-solid fa-location-dot text-slate-400 mr-2 text-xs"></i>
-              <span x-text="job.Location"></span>
-            </p>
-          </div>
-
-          <div class="mt-5 pt-3 border-t border-slate-100 flex flex-col gap-3">
-            <div class="text-xs font-semibold text-emerald-700 flex items-center">
-              <i class="fa-solid fa-wallet mr-1.5"></i>
-              <span x-text="job.Estimated_Salary"></span>
-            </div>
-            <a :href="job.Job_Link" target="_blank" class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
-              Apply on Employer Site <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-[10px]"></i>
-            </a>
-          </div>
-        </div>
-      </template>
-    </div>
-  </main>
-
-  <script>
-    function jobPortal() {
-      return {
-        searchQuery: '',
-        selectedCat: 'ALL',
-        jobs: [],
-        async loadJobs() {
-          try {
-            const res = await fetch('jobs_data.json');
-            this.jobs = await res.json();
-          } catch(e) {
-            console.error("Error loading JSON", e);
-          }
-        },
-        get filteredJobs() {
-          return this.jobs.filter(j => {
-            const catMatch = this.selectedCat === 'ALL' || (j.Category && j.Category.toUpperCase().includes(this.selectedCat));
-            const q = this.searchQuery.toLowerCase();
-            const text = `${j.Job_Title} ${j.Company} ${j.Location}`.toLowerCase();
-            return catMatch && (!q || text.includes(q));
-          });
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border-subtle: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --cat1-bg: #ecfdf5;
+            --cat1-text: #065f46;
+            --cat1-border: #a7f3d0;
+            --cat2-bg: #eff6ff;
+            --cat2-text: #1e40af;
+            --cat2-border: #bfdbfe;
+            --cat3-bg: #faf5ff;
+            --cat3-text: #6b21a8;
+            --cat3-border: #e9d5ff;
+            --cat4-bg: #f1f5f9;
+            --cat4-text: #334155;
+            --cat4-border: #cbd5e1;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
-      }
-    }
-  </script>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* --- Header --- */
+        .site-header {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.3);
+        }
+
+        .header-inner {
+            max-width: 1360px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-text p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-header {
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            color: #f1f5f9;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-header:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+
+        .btn-header-primary {
+            background: #4f46e5;
+            border-color: #6366f1;
+            color: #ffffff;
+        }
+        .btn-header-primary:hover {
+            background: #4338ca;
+        }
+
+        /* --- Main Container --- */
+        .main-container {
+            max-width: 1360px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        /* --- Hero Info Banner --- */
+        .tvcs-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border-radius: 14px;
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 1.75rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 15px -3px rgba(30, 27, 75, 0.3);
+        }
+
+        .banner-content h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .banner-content p {
+            font-size: 0.875rem;
+            color: #c7d2fe;
+            max-width: 850px;
+        }
+
+        .banner-pill {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* --- Search & Control Center (HiringCafe style) --- */
+        .search-container {
+            background: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+        }
+
+        .search-bar-wrap {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .search-bar-wrap i.search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .search-input-main {
+            width: 100%;
+            padding: 0.95rem 3.5rem 0.95rem 3.25rem;
+            font-size: 1.05rem;
+            border: 2px solid var(--border-subtle);
+            border-radius: 10px;
+            outline: none;
+            color: var(--text-heading);
+            background: #fbfcfe;
+            transition: all 0.2s ease;
+        }
+
+        .search-input-main:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: none;
+        }
+        .clear-search-btn:hover { color: var(--text-heading); }
+
+        /* Filter Controls */
+        .filters-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .filter-groups {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.55rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            font-size: 0.875rem;
+            color: var(--text-heading);
+            font-weight: 500;
+            background: #ffffff;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .filter-select:focus { border-color: var(--primary); }
+
+        /* Qualification Toggle (HiringCafe style pill) */
+        .toggle-qualifying {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-qualifying input {
+            accent-color: #10b981;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .toggle-qualifying span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .toggle-qualifying:hover {
+            background: #dcfce7;
+        }
+
+        /* --- Navigation Tabs --- */
+        .tabs-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-subtle);
+            padding-bottom: 0.25rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-heading);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-counter {
+            background: var(--border-subtle);
+            color: var(--text-body);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 12px;
+        }
+
+        .tab-btn.active .tab-counter {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* --- Job Cards Grid --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .job-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            position: relative;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+            border-color: var(--border-hover);
+        }
+
+        .card-top {
+            margin-bottom: 1rem;
+        }
+
+        .card-badges-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .priority-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .priority-cat1 { background: var(--cat1-bg); color: var(--cat1-text); border: 1px solid var(--cat1-border); }
+        .priority-cat2 { background: var(--cat2-bg); color: var(--cat2-text); border: 1px solid var(--cat2-border); }
+        .priority-cat3 { background: var(--cat3-bg); color: var(--cat3-text); border: 1px solid var(--cat3-border); }
+        .priority-cat4 { background: var(--cat4-bg); color: var(--cat4-text); border: 1px solid var(--cat4-border); }
+
+        .eligibility-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .eligibility-qualifying {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .eligibility-non-qualifying {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .job-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.4rem;
+            line-height: 1.35;
+        }
+
+        .company-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta-item {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .meta-item i {
+            width: 14px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .salary-badge {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #047857;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #ecfdf5;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.65rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .btn-apply {
+            flex-grow: 1;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-apply:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-bookmark {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-bookmark:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-bookmark.saved {
+            background: #fef08a;
+            color: #854d0e;
+            border-color: #facc15;
+        }
+
+        /* --- Employer Cards --- */
+        .employer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .employer-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.06);
+            border-color: var(--border-hover);
+        }
+
+        .employer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .employer-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            line-height: 1.3;
+        }
+
+        .active-jobs-pill {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .employer-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0.85rem 0;
+            line-height: 1.4;
+        }
+
+        .btn-employer-site {
+            background: #f8fafc;
+            color: var(--text-heading);
+            border: 1px solid var(--border-subtle);
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-employer-site:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: #c7d2fe;
+        }
+
+        /* --- Empty / Zero State --- */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- Modal Backdrop & Window --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-backdrop.open { display: flex; }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 680px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .modal-close-btn:hover { color: var(--text-heading); }
+
+        .modal-box h3 {
+            font-size: 1.35rem;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .criteria-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            font-size: 0.875rem;
+        }
+
+        .criteria-table th {
+            background: #f8fafc;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-subtle);
+            color: var(--text-heading);
+            font-weight: 700;
+        }
+
+        .criteria-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-body);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            color: white;
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .site-header { padding: 1rem; }
+            .header-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .header-actions { width: 100%; justify-content: flex-start; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .tvcs-banner { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="brand-block">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>TVCS Qualifying Careers</h1>
+                    <p>The Villages Charter School Admission Qualifying Jobs &amp; Employers</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-header" onclick="openModal('rulesModal')">
+                    <i class="fa-solid fa-scale-balanced"></i> Enrollment Rules
+                </button>
+                <button class="btn-header" onclick="switchTab('saved')">
+                    <i class="fa-solid fa-bookmark"></i> Saved (<span id="savedCountHeader">0</span>)
+                </button>
+                <button class="btn-header btn-header-primary" onclick="exportFilteredData()">
+                    <i class="fa-solid fa-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- TVCS Statutory Education Banner -->
+        <div class="tvcs-banner">
+            <div class="banner-content">
+                <h2><i class="fa-solid fa-shield-check"></i> Florida Charter Statute § 1002.33 Direct Enrollment</h2>
+                <p>
+                    Dependents qualify for admission to <strong>The Villages Charter School (TVCS)</strong> based on the parent/guardian's continuous full-time employment with an approved Category I, II, III, or IV business.
+                </p>
+            </div>
+            <div class="banner-pill">
+                Priority Tiered Feeds
+            </div>
+        </div>
+
+        <!-- HiringCafe-Style Unified Search & Control Center -->
+        <div class="search-container">
+            <div class="search-bar-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" class="search-input-main" placeholder="Search by job title, school, company, skill, or plaza (e.g. Teacher, Cyber, Middleton, Lake Sumter, Category I)...">
+                <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="filters-row">
+                <div class="filter-groups">
+                    <!-- TVCS Qualifying Full-Time Filter -->
+                    <label class="toggle-qualifying">
+                        <input type="checkbox" id="qualifyingOnlyCheck" onchange="applyFilters()">
+                        <span><i class="fa-solid fa-graduation-cap"></i> Full-Time Only (TVCS Admission Qualifying)</span>
+                    </label>
+
+                    <!-- Category Filter -->
+                    <select id="categoryFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="ALL">All Categories (I – IV)</option>
+                        <option value="CATEGORY I">Category I (Direct Operating Entities - 1st Priority)</option>
+                        <option value="CATEGORY II">Category II (Direct Subcontractors - 2nd Priority)</option>
+                        <option value="CATEGORY III">Category III (Commercial Tenants - 3rd Priority)</option>
+                        <option value="CATEGORY IV">Category IV (Approved Vendors - 4th Priority)</option>
+                    </select>
+
+                    <!-- Plaza / Location Filter -->
+                    <select id="plazaFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="ALL">All Plazas &amp; Campuses</option>
+                    </select>
+
+                    <!-- Employer Filter -->
+                    <select id="employerFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="ALL">All Approved Employers</option>
+                    </select>
+                </div>
+
+                <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                    Showing <span id="visibleCount" style="color: var(--text-heading); font-weight: 800;">0</span> verified items
+                </div>
+            </div>
+        </div>
+
+        <!-- View Tabs -->
+        <div class="tabs-header">
+            <button class="tab-btn active" id="tabJobsBtn" onclick="switchTab('jobs')">
+                <i class="fa-solid fa-briefcase"></i> Active Verified Jobs
+                <span class="tab-counter" id="activeJobsCountBadge">0</span>
+            </button>
+            <button class="tab-btn" id="tabEmployersBtn" onclick="switchTab('employers')">
+                <i class="fa-solid fa-building-columns"></i> All 432 Qualifying Employers
+                <span class="tab-counter" id="allEmployersCountBadge">432</span>
+            </button>
+            <button class="tab-btn" id="tabSavedBtn" onclick="switchTab('saved')">
+                <i class="fa-solid fa-bookmark"></i> Saved Positions
+                <span class="tab-counter" id="savedTabCountBadge">0</span>
+            </button>
+        </div>
+
+        <!-- Tab 1: Active Jobs Grid -->
+        <div id="jobsView" class="cards-grid">
+            <!-- Cards rendered via JS -->
+        </div>
+
+        <!-- Tab 2: Employers Directory Grid -->
+        <div id="employersView" class="cards-grid" style="display: none;">
+            <!-- Employer cards rendered via JS -->
+        </div>
+
+        <!-- Tab 3: Saved Jobs Grid -->
+        <div id="savedView" class="cards-grid" style="display: none;">
+            <!-- Saved job cards rendered via JS -->
+        </div>
+
+    </div>
+
+    <!-- Modal: TVCS Enrollment & Category Rules -->
+    <div id="rulesModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'rulesModal')">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeModal('rulesModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h3><i class="fa-solid fa-scale-balanced" style="color: var(--primary);"></i> TVCS Enrollment Qualification Criteria</h3>
+            <p style="font-size: 0.9rem; color: var(--text-body); margin-bottom: 1rem;">
+                The Villages Charter School operates in partnership with The Villages under Florida Statute § 1002.33. Enrollment admission is granted based on parent employment priority tiers:
+            </p>
+
+            <table class="criteria-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Eligible Employers</th>
+                        <th>Admission Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Category I</strong></td>
+                        <td>Direct employees of The Villages of Lake-Sumter, Inc., Holding Company, TVCS teachers &amp; staff, Properties of The Villages, Recreation.</td>
+                        <td><span class="priority-badge priority-cat1">1st Priority Lottery</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Category II</strong></td>
+                        <td>Direct full-time operational subcontractors (e.g. Jacobs Engineering / utilities, Sumter County BOCC).</td>
+                        <td><span class="priority-badge priority-cat2">2nd Priority Lottery</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Category III</strong></td>
+                        <td>Full-time employees of commercial tenants leasing physical business space from The Villages across town squares and commercial plazas.</td>
+                        <td><span class="priority-badge priority-cat3">3rd Priority Lottery</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Category IV</strong></td>
+                        <td>Full-time employees of approved vendors and regional business partners.</td>
+                        <td><span class="priority-badge priority-cat4">4th Priority Tier</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; color: #92400e;">
+                <strong><i class="fa-solid fa-triangle-exclamation"></i> Mandatory Full-Time Requirement:</strong>
+                Florida statutory guidelines require continuous <strong>full-time</strong> employment (typically 30–40 hours/week) during the student's enrollment. Part-time positions do not meet school eligibility requirements.
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
+        <span id="toastMsg">Action completed</span>
+    </div>
+
+    <script>
+        let allJobs = [];
+        let allEmployers = [];
+        let savedJobIds = new Set();
+        let currentTab = 'jobs';
+
+        // Load Saved Jobs from localStorage
+        function loadSavedState() {
+            try {
+                const stored = localStorage.getItem('tvcs_saved_jobs');
+                if (stored) {
+                    savedJobIds = new Set(JSON.parse(stored));
+                }
+            } catch (e) {
+                savedJobIds = new Set();
+            }
+            updateSavedCountBadges();
+        }
+
+        function saveSavedState() {
+            localStorage.setItem('tvcs_saved_jobs', JSON.stringify([...savedJobIds]));
+            updateSavedCountBadges();
+        }
+
+        function updateSavedCountBadges() {
+            const count = savedJobIds.size;
+            document.getElementById('savedCountHeader').innerText = count;
+            document.getElementById('savedTabCountBadge').innerText = count;
+        }
+
+        function toggleBookmark(jobId) {
+            if (savedJobIds.has(jobId)) {
+                savedJobIds.delete(jobId);
+                showToast("Removed job from saved list");
+            } else {
+                savedJobIds.add(jobId);
+                showToast("Saved job to your list!");
+            }
+            saveSavedState();
+            renderCurrentView();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            t.style.display = 'flex';
+            setTimeout(() => { t.style.display = 'none'; }, 2400);
+        }
+
+        // View Tabs Controller
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tabJobsBtn').classList.toggle('active', tab === 'jobs');
+            document.getElementById('tabEmployersBtn').classList.toggle('active', tab === 'employers');
+            document.getElementById('tabSavedBtn').classList.toggle('active', tab === 'saved');
+
+            document.getElementById('jobsView').style.display = (tab === 'jobs') ? 'grid' : 'none';
+            document.getElementById('employersView').style.display = (tab === 'employers') ? 'grid' : 'none';
+            document.getElementById('savedView').style.display = (tab === 'saved') ? 'grid' : 'none';
+
+            applyFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            applyFilters();
+        }
+
+        function populateDropdowns() {
+            const plazaSelect = document.getElementById('plazaFilter');
+            const employerSelect = document.getElementById('employerFilter');
+
+            // Unique Plazas
+            const plazas = new Set();
+            allJobs.forEach(j => { if (j.Plaza_Location) plazas.add(j.Plaza_Location); });
+            allEmployers.forEach(e => { if (e.Plaza) plazas.add(e.Plaza); });
+
+            [...plazas].sort().forEach(pl => {
+                const opt = document.createElement('option');
+                opt.value = pl;
+                opt.innerText = pl;
+                plazaSelect.appendChild(opt);
+            });
+
+            // Unique Employers
+            const employers = new Set();
+            allJobs.forEach(j => { if (j.Company) employers.add(j.Company); });
+            allEmployers.forEach(e => { if (e.Company) employers.add(e.Company); });
+
+            [...employers].sort().forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp;
+                opt.innerText = emp;
+                employerSelect.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            clearBtn.style.display = searchVal ? 'block' : 'none';
+
+            const qualifyingOnly = document.getElementById('qualifyingOnlyCheck').checked;
+            const categoryVal = document.getElementById('categoryFilter').value;
+            const plazaVal = document.getElementById('plazaFilter').value;
+            const employerVal = document.getElementById('employerFilter').value;
+
+            renderCurrentView(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal);
+        }
+
+        function renderCurrentView(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal) {
+            searchVal = searchVal !== undefined ? searchVal : document.getElementById('searchInput').value.trim().toLowerCase();
+            qualifyingOnly = qualifyingOnly !== undefined ? qualifyingOnly : document.getElementById('qualifyingOnlyCheck').checked;
+            categoryVal = categoryVal || document.getElementById('categoryFilter').value;
+            plazaVal = plazaVal || document.getElementById('plazaFilter').value;
+            employerVal = employerVal || document.getElementById('employerFilter').value;
+
+            if (currentTab === 'jobs') {
+                renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, false);
+            } else if (currentTab === 'employers') {
+                renderEmployers(searchVal, categoryVal, plazaVal, employerVal);
+            } else if (currentTab === 'saved') {
+                renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, true);
+            }
+        }
+
+        function renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, savedOnly = false) {
+            const container = savedOnly ? document.getElementById('savedView') : document.getElementById('jobsView');
+
+            const filtered = allJobs.filter(job => {
+                const jobId = job.Job_Link || (job.Job_Title + job.Company);
+                if (savedOnly && !savedJobIds.has(jobId)) return false;
+                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
+                if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
+                if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
+
+                if (searchVal) {
+                    const matchText = `${job.Job_Title} ${job.Company} ${job.Plaza_Location} ${job.Location} ${job.Category} ${job.Description || ''}`.toLowerCase();
+                    return matchText.includes(searchVal);
+                }
+                return true;
+            });
+
+            document.getElementById('visibleCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                        <h3>No Verified Positions Found</h3>
+                        <p>${savedOnly ? "You haven't bookmarked any jobs yet. Browse active jobs and click the bookmark icon to save them." : "Try adjusting your search filters or browse the Approved Employers Directory to view corporate career portals."}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(job => {
+                const jobId = job.Job_Link || (job.Job_Title + job.Company);
+                const isSaved = savedJobIds.has(jobId);
+                const isCat1 = job.Category === 'CATEGORY I';
+                const isCat2 = job.Category === 'CATEGORY II';
+                const isCat3 = job.Category === 'CATEGORY III';
+                const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
+
+                return `
+                    <div class="job-card">
+                        <div class="card-top">
+                            <div class="card-badges-row">
+                                <span class="priority-badge ${catClass}">
+                                    <i class="fa-solid fa-award"></i> ${job.Priority_Label || job.Category}
+                                </span>
+                                ${job.TVCS_Qualifying ? `
+                                    <span class="eligibility-pill eligibility-qualifying" title="Meets Florida statutory requirement for full-time employment">
+                                        <i class="fa-solid fa-circle-check"></i> TVCS Qualifying (Full-Time)
+                                    </span>
+                                ` : `
+                                    <span class="eligibility-pill eligibility-non-qualifying" title="Part-time hours do not meet TVCS school admission criteria">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Part-Time (Non-Qualifying)
+                                    </span>
+                                `}
+                            </div>
+
+                            <h2 class="job-title">${escapeHtml(job.Job_Title)}</h2>
+                            <div class="company-name">
+                                <i class="fa-regular fa-building"></i> ${escapeHtml(job.Company)}
+                            </div>
+
+                            <div class="meta-list">
+                                <div class="meta-item">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>${escapeHtml(job.Plaza_Location || job.Location)}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fa-solid fa-server"></i>
+                                    <span>Source: ${escapeHtml(job.Source || 'Direct Employer ATS')}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span>Schedule: ${escapeHtml(job.Employment_Type || 'Full-Time')}</span>
+                                </div>
+                            </div>
+
+                            <div class="salary-badge">
+                                <i class="fa-solid fa-wallet"></i> ${escapeHtml(job.Estimated_Salary || 'Full-Time Eligible')}
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="${job.Job_Link}" target="_blank" rel="noopener noreferrer" class="btn-apply">
+                                Apply on Official ATS <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <button class="btn-bookmark ${isSaved ? 'saved' : ''}" onclick="toggleBookmark('${escapeAttr(jobId)}')" title="${isSaved ? 'Remove Bookmark' : 'Save Job'}">
+                                <i class="fa-${isSaved ? 'solid' : 'regular'} fa-bookmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderEmployers(searchVal, categoryVal, plazaVal, employerVal) {
+            const container = document.getElementById('employersView');
+
+            const filtered = allEmployers.filter(emp => {
+                if (categoryVal !== 'ALL' && emp.Category !== categoryVal) return false;
+                if (plazaVal !== 'ALL' && emp.Plaza !== plazaVal) return false;
+                if (employerVal !== 'ALL' && emp.Company !== employerVal) return false;
+
+                if (searchVal) {
+                    const matchText = `${emp.Company} ${emp.Plaza} ${emp.Category} ${emp.Qualifies_Description || ''}`.toLowerCase();
+                    return matchText.includes(searchVal);
+                }
+                return true;
+            });
+
+            document.getElementById('visibleCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-building-circle-xmark"></i></div>
+                        <h3>No Employers Match Your Criteria</h3>
+                        <p>Try broadening your plaza or category search filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(emp => {
+                const isCat1 = emp.Category === 'CATEGORY I';
+                const isCat2 = emp.Category === 'CATEGORY II';
+                const isCat3 = emp.Category === 'CATEGORY III';
+                const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
+
+                return `
+                    <div class="employer-card">
+                        <div>
+                            <div class="employer-header">
+                                <span class="priority-badge ${catClass}">
+                                    ${emp.Priority_Label || emp.Category}
+                                </span>
+                                ${emp.Active_Jobs_Count > 0 ? `
+                                    <span class="active-jobs-pill" onclick="filterByEmployer('${escapeAttr(emp.Company)}')">
+                                        <i class="fa-solid fa-bolt"></i> ${emp.Active_Jobs_Count} Openings
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <h3 class="employer-title">${escapeHtml(emp.Company)}</h3>
+
+                            <div class="meta-item" style="margin-top: 0.5rem;">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${escapeHtml(emp.Plaza)}</span>
+                            </div>
+
+                            <p class="employer-desc">
+                                ${escapeHtml(emp.Qualifies_Description || 'Approved TVCS qualifying business.')}
+                            </p>
+                        </div>
+
+                        <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Careers / Inquire
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterByEmployer(companyName) {
+            document.getElementById('employerFilter').value = companyName;
+            switchTab('jobs');
+            applyFilters();
+        }
+
+        // Export Filtered View to CSV
+        function exportFilteredData() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            if (currentTab === 'jobs' || currentTab === 'saved') {
+                csvContent += "Job Title,Company,Category,Priority,Employment Type,TVCS Qualifying,Plaza Location,Salary,Apply Link\n";
+                const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+                const qualifyingOnly = document.getElementById('qualifyingOnlyCheck').checked;
+                const categoryVal = document.getElementById('categoryFilter').value;
+                const plazaVal = document.getElementById('plazaFilter').value;
+                const employerVal = document.getElementById('employerFilter').value;
+
+                allJobs.forEach(j => {
+                    const jobId = j.Job_Link || (j.Job_Title + j.Company);
+                    if (currentTab === 'saved' && !savedJobIds.has(jobId)) return;
+                    if (qualifyingOnly && !j.TVCS_Qualifying) return;
+                    if (categoryVal !== 'ALL' && j.Category !== categoryVal) return;
+                    if (plazaVal !== 'ALL' && j.Plaza_Location !== plazaVal) return;
+                    if (employerVal !== 'ALL' && j.Company !== employerVal) return;
+                    if (searchVal) {
+                        const matchText = `${j.Job_Title} ${j.Company} ${j.Plaza_Location} ${j.Location}`.toLowerCase();
+                        if (!matchText.includes(searchVal)) return;
+                    }
+
+                    const row = [
+                        `"${(j.Job_Title || '').replace(/"/g, '""')}"`,
+                        `"${(j.Company || '').replace(/"/g, '""')}"`,
+                        `"${(j.Category || '').replace(/"/g, '""')}"`,
+                        `"${(j.Priority_Label || '').replace(/"/g, '""')}"`,
+                        `"${(j.Employment_Type || '').replace(/"/g, '""')}"`,
+                        `"${j.TVCS_Qualifying ? 'Yes (Full-Time)' : 'No (Part-Time)'}"`,
+                        `"${(j.Plaza_Location || '').replace(/"/g, '""')}"`,
+                        `"${(j.Estimated_Salary || '').replace(/"/g, '""')}"`,
+                        `"${(j.Job_Link || '').replace(/"/g, '""')}"`
+                    ];
+                    csvContent += row.join(",") + "\n";
+                });
+            } else {
+                csvContent += "Company,Category,Priority,Plaza Location,Website\n";
+                allEmployers.forEach(e => {
+                    const row = [
+                        `"${(e.Company || '').replace(/"/g, '""')}"`,
+                        `"${(e.Category || '').replace(/"/g, '""')}"`,
+                        `"${(e.Priority_Label || '').replace(/"/g, '""')}"`,
+                        `"${(e.Plaza || '').replace(/"/g, '""')}"`,
+                        `"${(e.Website || '').replace(/"/g, '""')}"`
+                    ];
+                    csvContent += row.join(",") + "\n";
+                });
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `tvcs_${currentTab}_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Exported results to CSV!");
+        }
+
+        // Modal Helpers
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('open');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('open');
+        }
+
+        function closeModalOnBackdrop(event, modalId) {
+            if (event.target === document.getElementById(modalId)) {
+                closeModal(modalId);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeAttr(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // Data Initializer
+        async function initData() {
+            loadSavedState();
+
+            try {
+                const [jobsRes, employersRes] = await Promise.all([
+                    fetch(`jobs_data.json?t=${Date.now()}`),
+                    fetch(`employers_data.json?t=${Date.now()}`)
+                ]);
+
+                allJobs = await jobsRes.json();
+                allEmployers = await employersRes.json();
+
+                document.getElementById('activeJobsCountBadge').innerText = allJobs.length;
+                document.getElementById('allEmployersCountBadge').innerText = allEmployers.length;
+
+                populateDropdowns();
+                applyFilters();
+            } catch (err) {
+                console.error("Error loading TVCS feed:", err);
+                document.getElementById('jobsView').innerHTML = `
+                    <div class="empty-state" style="color: #ef4444;">
+                        <div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h3>Failed to Load Job Data</h3>
+                        <p>Ensure 'jobs_data.json' and 'employers_data.json' exist in the directory.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Live Debounced Search Listener
+        let searchTimeout = null;
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(applyFilters, 150);
+        });
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', initData);
+    </script>
 </body>
 </html>
