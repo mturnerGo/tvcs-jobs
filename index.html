@@ -1316,6 +1316,29 @@
                 const catClass = isCat1 ? 'priority-cat1' : (isCat2 ? 'priority-cat2' : (isCat3 ? 'priority-cat3' : 'priority-cat4'));
                 const phoneTel = emp.Phone_Tel || (emp.Phone ? emp.Phone.replace(/\D/g, '') : '');
 
+                const isContactPage = emp.Website && (emp.Website.toLowerCase().includes('/contact') || emp.Website.toLowerCase().includes('contact-us'));
+                const isCareersPage = emp.Website && (emp.Website.toLowerCase().includes('/career') || emp.Website.toLowerCase().includes('/job') || emp.Website.toLowerCase().includes('adp.com') || emp.Website.toLowerCase().includes('workstream') || emp.Website.toLowerCase().includes('governmentjobs'));
+                
+                let buttonIcon = 'fa-arrow-up-right-from-square';
+                let buttonLabel = 'Find Careers for this Location';
+                let buttonStyle = '';
+                
+                if (emp.Has_Official_Website) {
+                    if (isContactPage) {
+                        buttonIcon = 'fa-address-card';
+                        buttonLabel = 'Contact & Inquire Directly';
+                        buttonStyle = 'background: #f0fdf4; color: #166534; border-color: #bbf7d0; font-weight: 700;';
+                    } else if (isCareersPage) {
+                        buttonIcon = 'fa-briefcase';
+                        buttonLabel = 'Careers & Application Portal';
+                        buttonStyle = 'background: var(--primary-light); color: var(--primary); font-weight: 700; border-color: #c7d2fe;';
+                    } else {
+                        buttonIcon = 'fa-globe';
+                        buttonLabel = 'Official Company Website';
+                        buttonStyle = 'background: #f8fafc; color: #334155; font-weight: 600; border-color: #cbd5e1;';
+                    }
+                }
+
                 return `
                     <div class="employer-card">
                         <div>
@@ -1364,8 +1387,8 @@
                         </div>
 
                         <div class="employer-actions-row">
-                            <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site" style="${emp.Has_Official_Website ? 'background: var(--primary-light); color: var(--primary); font-weight: 700; border-color: #c7d2fe;' : ''}">
-                                <i class="fa-solid ${emp.Has_Official_Website ? 'fa-briefcase' : 'fa-arrow-up-right-from-square'}"></i> ${emp.Has_Official_Website ? 'Careers & Application Portal' : 'Find Careers for this Location'}
+                            <a href="${emp.Website}" target="_blank" rel="noopener noreferrer" class="btn-employer-site" style="${buttonStyle}">
+                                <i class="fa-solid ${buttonIcon}"></i> ${buttonLabel}
                             </a>
                             ${emp.Phone ? `
                                 <a href="tel:${phoneTel}" class="btn-phone" title="Call Business">

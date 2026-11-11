@@ -319,7 +319,7 @@ def harvest_the_villages_operating_jobs():
 # 3. Harvest Sumter County BOCC Public Jobs (Category II)
 # ---------------------------------------------------------------------------
 def harvest_sumter_county_jobs():
-    print("\n[3/5] Harvesting Sumter County BOCC (Category II)...")
+    print("\n[3/6] Harvesting Sumter County BOCC (Category II)...")
     jobs = []
     gov_url = 'https://www.governmentjobs.com/careers/home/index?agency=sumtercountyfl&sort=PositionTitle&isDescendingSort=false'
     gov_headers = dict(HEADERS)
@@ -359,6 +359,58 @@ def harvest_sumter_county_jobs():
         print(f"      ✓ Sumter County: Captured {len(jobs)} active positions.")
     except Exception as e:
         print(f"      [!] Error harvesting Sumter County jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 3b. Harvest Village Center Community Development District (VCCDD - Category II)
+# ---------------------------------------------------------------------------
+def harvest_vccdd_jobs():
+    print("\n[3b/6] Harvesting Village Center Community Dev. District (VCCDD - Category II)...")
+    jobs = []
+    vccdd_cid = "c804bf4f-d461-4f38-861c-c50199110eeb"
+    api_url = f"https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={vccdd_cid}&timeStamp=1000"
+    try:
+        req = urllib.request.Request(api_url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for req_item in data.get('jobRequisitions', []):
+                title = req_item.get('requisitionTitle', '').strip()
+                item_id = req_item.get('itemID', '')
+                if not title or not item_id:
+                    continue
+
+                full_time = is_full_time(title)
+                locs = req_item.get('requisitionLocations', [])
+                loc_name = "The Villages, FL"
+                if locs and 'nameCode' in locs[0]:
+                    nc = locs[0]['nameCode']
+                    loc_name = nc.get('shortName', 'The Villages, FL').strip() if isinstance(nc, dict) else "The Villages, FL"
+
+                apply_link = f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={vccdd_cid}&jobId={item_id}"
+                t_lower = title.lower()
+                dept = "Public Safety & Fire Rescue" if any(k in t_lower for k in ['fire', 'paramedic', 'captain']) else ("Recreation & Golf Maintenance" if any(k in t_lower for k in ['recreation', 'staff', 'outside']) else "District Government Administration")
+                
+                jobs.append({
+                    "Job_Title": title.title(),
+                    "Company": "Village Center Community Dev. District",
+                    "Category": "CATEGORY II",
+                    "Priority_Tier": 2,
+                    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
+                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                    "TVCS_Qualifying": full_time,
+                    "Plaza_Location": f"VCCDD - {dept}",
+                    "Location": loc_name,
+                    "Phone": "(352) 751-3939",
+                    "Estimated_Salary": "District Public Scale + Benefits" if full_time else "Competitive Hourly Scale",
+                    "Source": "VCCDD District Gov (Official ADP ATS)",
+                    "Job_Link": apply_link,
+                    "Posted_Date": req_item.get('postDate', '')[:10] if req_item.get('postDate') else "Recent",
+                    "Description": f"Official position with Village Center Community Development District ({dept}). Full-time continuous positions qualify dependents for Category II admission."
+                })
+        print(f"      ✓ VCCDD District Gov: Captured {len(jobs)} active positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting VCCDD jobs: {e}")
     return jobs
 
 
@@ -651,6 +703,10 @@ async def main():
     # 3. Harvest Sumter County BOCC (Category II)
     sumter_jobs = harvest_sumter_county_jobs()
     all_jobs.extend(sumter_jobs)
+
+    # 3b. Harvest Village Center Community Development District (VCCDD - Category II)
+    vccdd_jobs = harvest_vccdd_jobs()
+    all_jobs.extend(vccdd_jobs)
 
     # 4. Harvest Jacobs Engineering (Category II)
     async with async_playwright() as p:
