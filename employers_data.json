@@ -15,7 +15,7 @@
     "Contact_Person": "",
     "Is_Hiring": true,
     "Clean_Name": "Villages Charter School",
-    "Active_Jobs_Count": 14,
+    "Active_Jobs_Count": 13,
     "Qualifies_Description": "Approved under Category I (Direct - 1st Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
   },
   {
@@ -129,7 +129,7 @@
     "Contact_Person": "",
     "Is_Hiring": false,
     "Clean_Name": "Villages Charter School Autism Cntr",
-    "Active_Jobs_Count": 14,
+    "Active_Jobs_Count": 13,
     "Qualifies_Description": "Approved under Category I (Direct - 1st Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
   },
   {
@@ -12426,6 +12426,25 @@
     "Qualifies_Description": "Approved under Category III (Commercial Tenant - 3rd Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
   },
   {
+    "Employer_ID": 3,
+    "Company": "UF Health (The Villages Hospital)",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Plaza": "The Villages Regional Medical Center - West Campus",
+    "Address": "1451 El Camino Real, The Villages, FL 32159-0041",
+    "Phone": "(352) 323-4163",
+    "Phone_Tel": "3523234163",
+    "Website": "https://jobs.ufhealth.org/",
+    "Has_Official_Website": true,
+    "Email": "dbelcher@shands.ufl.edu",
+    "Contact_Person": "Denise Belcher",
+    "Is_Hiring": true,
+    "Clean_Name": "UF Health Villages Hospital",
+    "Active_Jobs_Count": 295,
+    "Qualifies_Description": "Approved under Category IV (Approved Vendor - 4th Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
+  },
+  {
     "Employer_ID": 164,
     "Company": "AAA Auto Club South La Plaza Grande",
     "Category": "CATEGORY IV",
@@ -12973,25 +12992,6 @@
     "Contact_Person": "Christos Vogiatzis",
     "Is_Hiring": true,
     "Clean_Name": "TriCounty Physicians",
-    "Active_Jobs_Count": 0,
-    "Qualifies_Description": "Approved under Category IV (Approved Vendor - 4th Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
-  },
-  {
-    "Employer_ID": 3,
-    "Company": "UF Health (The Villages Hospital)",
-    "Category": "CATEGORY IV",
-    "Priority_Tier": 4,
-    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Plaza": "The Villages Regional Medical Center - West Campus",
-    "Address": "1451 El Camino Real, The Villages, FL 32159-0041",
-    "Phone": "(352) 323-4163",
-    "Phone_Tel": "3523234163",
-    "Website": "https://jobs.ufhealth.org/",
-    "Has_Official_Website": true,
-    "Email": "dbelcher@shands.ufl.edu",
-    "Contact_Person": "Denise Belcher",
-    "Is_Hiring": true,
-    "Clean_Name": "UF Health Villages Hospital",
     "Active_Jobs_Count": 0,
     "Qualifies_Description": "Approved under Category IV (Approved Vendor - 4th Priority). Continuous full-time employees are eligible for TVCS enrollment under Florida Charter School Statute \u00a7 1002.33."
   },

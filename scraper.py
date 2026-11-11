@@ -517,6 +517,150 @@ def harvest_four_rivers_jobs():
 
 
 # ---------------------------------------------------------------------------
+# 5b. Harvest UF Health Central Florida (The Villages Hospital - Category III)
+# ---------------------------------------------------------------------------
+def harvest_ufhealth_jobs():
+    print("\n[5b/8] Harvesting UF Health Central Florida (The Villages Hospital - iCIMS REST API)...")
+    jobs = []
+    page = 1
+    total_pages = 4
+    
+    while page <= total_pages:
+        url = f"https://jobs.ufhealth.org/api/jobs?stretchUnit=MILES&stretch=10&location=The%20Villages&page={page}&limit=100&sortBy=relevance&descending=false&internal=false"
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                raw_jobs = data.get('jobs', [])
+                if not raw_jobs:
+                    break
+                    
+                total_count = data.get('totalCount', 0)
+                total_pages = (total_count + 99) // 100
+                
+                for item in raw_jobs:
+                    d = item.get('data', {})
+                    title = d.get('title', '').strip()
+                    slug = d.get('slug', '')
+                    if not title or not slug:
+                        continue
+                        
+                    emp_type = str(d.get('employment_type', '')).upper()
+                    t_lower = title.lower()
+                    
+                    full_time = True
+                    if 'prn' in t_lower or 'per diem' in t_lower or 'part time' in t_lower or 'part-time' in t_lower or 'temporary' in emp_type:
+                        full_time = False
+                    elif 'full time' in t_lower or 'full-time' in t_lower or 'full_time' in emp_type:
+                        full_time = True
+                        
+                    loc_name = d.get('location_name', 'UF Health Spanish Plaines Hospital')
+                    address = d.get('street_address', '1451 El Camino Real')
+                    city = d.get('city', 'The Villages')
+                    state = d.get('state', 'FL')
+                    
+                    apply_link = d.get('canonical_url') or f"https://jobs.ufhealth.org/jobs/{slug}"
+                    posted_raw = d.get('posted_date', '')
+                    posted_date = posted_raw[:10] if posted_raw else "Recent"
+                    
+                    jobs.append({
+                        "Job_Title": title,
+                        "Company": "UF Health (The Villages Hospital)",
+                        "Category": "CATEGORY III",
+                        "Priority_Tier": 3,
+                        "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+                        "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                        "TVCS_Qualifying": full_time,
+                        "Plaza_Location": loc_name or "UF Health Spanish Plaines / The Villages",
+                        "Location": f"{address}, {city}, {state}".strip(", "),
+                        "Phone": "(352) 751-8000",
+                        "Estimated_Salary": "UF Health Hospital & Clinical Scale",
+                        "Source": "UF Health Central Florida (Official iCIMS ATS)",
+                        "Job_Link": apply_link,
+                        "Posted_Date": posted_date,
+                        "Description": f"Healthcare position at {loc_name}. {'Full-time continuous positions qualify dependents for Category III TVCS admission.' if full_time else 'Part-time / PRN position.'}"
+                    })
+            page += 1
+        except Exception as e:
+            print(f"      [!] Error harvesting UF Health page {page}: {e}")
+            break
+            
+    print(f"      ✓ UF Health: Captured {len(jobs)} active hospital & clinical positions.")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 5c. Harvest Seacoast National Bank / Citizens First (Category III)
+# ---------------------------------------------------------------------------
+def harvest_seacoast_jobs():
+    print("\n[5c/8] Harvesting Seacoast Bank / Citizens First (UKG Pro UltiPro REST API)...")
+    jobs = []
+    board_id = "7851737e-66c7-908f-77e9-6d69f4eb0ead"
+    url = f"https://recruiting.ultipro.com/SEA1007SEACO/JobBoard/{board_id}/JobBoardView/LoadSearchResults"
+    payload = json.dumps({'opportunitySearch': {'Top': 100, 'Skip': 0}}).encode('utf-8')
+    seacoast_headers = dict(HEADERS)
+    seacoast_headers['Content-Type'] = 'application/json'
+    
+    try:
+        req = urllib.request.Request(url, data=payload, headers=seacoast_headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            opps = data.get('opportunities', [])
+            
+            for op in opps:
+                title = op.get('Title', '').strip()
+                op_id = op.get('Id')
+                if not title or not op_id:
+                    continue
+                    
+                locs = op.get('Locations', [])
+                loc_text = ' '.join([l.get('LocalizedCity', '') + ' ' + l.get('LocalizedState', '') + ' ' + l.get('LocalizedAddress', {}).get('PostalCode', '') for l in locs if isinstance(l, dict)])
+                
+                is_villages = False
+                t_lower = title.lower()
+                l_lower = loc_text.lower()
+                
+                villages_plazas = ['the villages', 'villages', 'lake sumter', 'magnolia plaza', 'eastport', 'spanish plaines', 'lake deaton', 'brownwood', 'pinellas plaza', '32162', '32163', '32159', 'middleton']
+                if any(k in t_lower for k in villages_plazas) or any(k in l_lower for k in villages_plazas):
+                    is_villages = True
+                    
+                if not is_villages:
+                    continue
+                    
+                plaza = "The Villages Regional Branches"
+                for p in ['Eastport', 'Magnolia Plaza', 'Lake Sumter Landing', 'Lake Sumter', 'Spanish Plaines', 'Lake Deaton', 'Brownwood']:
+                    if p.lower() in t_lower or p.lower() in l_lower:
+                        plaza = f"Seacoast Bank - {p}"
+                        break
+                        
+                full_time = "part time" not in t_lower and "part-time" not in t_lower and "temporary" not in t_lower
+                apply_link = f"https://recruiting.ultipro.com/SEA1007SEACO/JobBoard/{board_id}/OpportunityDetail?opportunityId={op_id}"
+                posted_date = op.get('PostedDate', '')[:10] if op.get('PostedDate') else "Recent"
+                
+                jobs.append({
+                    "Job_Title": f"Seacoast Bank - {title}",
+                    "Company": "Seacoast National Bank",
+                    "Category": "CATEGORY III",
+                    "Priority_Tier": 3,
+                    "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+                    "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                    "TVCS_Qualifying": full_time,
+                    "Plaza_Location": plaza,
+                    "Location": "The Villages, FL",
+                    "Phone": "(800) 706-9991",
+                    "Estimated_Salary": "Competitive Banking Scale + Comprehensive Benefits",
+                    "Source": "Seacoast Bank (Official UKG Pro ATS)",
+                    "Job_Link": apply_link,
+                    "Posted_Date": posted_date,
+                    "Description": f"Banking position at {plaza}. Full-time continuous employees are eligible for Category III TVCS enrollment priority."
+                })
+        print(f"      ✓ Seacoast Bank: Captured {len(jobs)} active branch positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting Seacoast Bank jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
 # 6. Harvest TVCS Official Marketplace & Resolve Direct Career URLs
 # ---------------------------------------------------------------------------
 def harvest_official_tvcs_marketplace(active_jobs, cache):
@@ -721,6 +865,14 @@ async def main():
     # 5. Harvest 4 Rivers Smokehouse Active Positions (Workstream ATS - Category III)
     four_rivers_jobs = harvest_four_rivers_jobs()
     all_jobs.extend(four_rivers_jobs)
+
+    # 5b. Harvest UF Health Central Florida (The Villages Hospital - Category III)
+    uf_jobs = harvest_ufhealth_jobs()
+    all_jobs.extend(uf_jobs)
+
+    # 5c. Harvest Seacoast National Bank / Citizens First (Category III)
+    seacoast_jobs = harvest_seacoast_jobs()
+    all_jobs.extend(seacoast_jobs)
 
     # Deduplicate verified jobs
     unique_jobs = []
