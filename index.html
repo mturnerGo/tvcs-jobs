@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PDF.js for 100% Client-Side Private Resume Parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         :root {
@@ -940,6 +942,134 @@
             .pagination-bar { flex-direction: column; align-items: center; text-align: center; }
             .pagination-controls { justify-content: center; }
         }
+
+        /* --- Resume Matcher Styles --- */
+        .btn-header-match {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-header-match:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        .resume-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2.25rem 1.5rem;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .resume-dropzone:hover, .resume-dropzone.dragover {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .match-score-badge {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+        }
+
+        .matched-skills-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.85rem;
+        }
+        .matched-skills-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-bottom: 0.35rem;
+        }
+        .matched-skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+        .skill-chip {
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            text-transform: capitalize;
+        }
+
+        .resume-match-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(55, 48, 163, 0.25);
+            border: 1px solid rgba(199, 210, 254, 0.2);
+        }
+        .resume-match-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .match-icon-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #34d399;
+            flex-shrink: 0;
+        }
+        .resume-match-title {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+        .resume-match-subtitle {
+            font-size: 0.82rem;
+            color: #c7d2fe;
+        }
+        .btn-clear-match {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.5rem 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .btn-clear-match:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -958,6 +1088,9 @@
             </div>
 
             <div class="header-actions">
+                <button class="btn-header btn-header-match" onclick="openModal('resumeModal')" title="Upload your resume to match with open positions">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Match My Resume
+                </button>
                 <button class="btn-header" onclick="openModal('rulesModal')">
                     <i class="fa-solid fa-scale-balanced"></i> Enrollment Rules
                 </button>
@@ -981,9 +1114,28 @@
                     Dependents qualify for admission to <strong>The Villages Charter School (TVCS)</strong> based on the parent/guardian's continuous full-time employment with an approved Category I, II, III, or IV business.
                 </p>
             </div>
-            <div class="banner-pill">
-                785 Verified Employers
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                <div class="banner-pill">
+                    785 Verified Employers
+                </div>
+                <button class="banner-pill" onclick="openModal('resumeModal')" style="cursor: pointer; background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.4); color: white; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Resume Match
+                </button>
             </div>
+        </div>
+
+        <!-- Resume Match Alert Banner -->
+        <div id="resumeMatchBanner" class="resume-match-banner" style="display: none;">
+            <div class="resume-match-banner-content">
+                <div class="match-icon-circle"><i class="fa-solid fa-bullseye"></i></div>
+                <div>
+                    <div class="resume-match-title">Resume Matching Active (<span id="resumeMatchCount">0</span> relevant positions found)</div>
+                    <div class="resume-match-subtitle">Jobs are ranked by compatibility with your experience, credentials, and skills.</div>
+                </div>
+            </div>
+            <button class="btn-clear-match" onclick="clearResumeMatch()">
+                <i class="fa-solid fa-xmark"></i> Clear Match Filter
+            </button>
         </div>
 
         <!-- HiringCafe-Style Unified Search & Control Center -->
@@ -1170,6 +1322,85 @@
         </div>
     </div>
 
+    <!-- Modal: Resume Matcher -->
+    <div id="resumeModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'resumeModal')">
+        <div class="modal-box" style="max-width: 650px;">
+            <button class="modal-close-btn" onclick="closeModal('resumeModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div style="background: #eef2ff; color: #4f46e5; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-heading);">Smart Resume Matcher</h3>
+                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted);">Find the highest-relevance TVCS qualifying positions for your background</p>
+                </div>
+            </div>
+
+            <div class="privacy-notice" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.82rem; color: #166534; display: flex; align-items: center; gap: 0.65rem;">
+                <i class="fa-solid fa-shield-halved" style="font-size: 1.25rem; color: #15803d; flex-shrink: 0;"></i>
+                <div>
+                    <strong>100% Client-Side Privacy:</strong> Your resume is processed privately inside your browser and never leaves your computer. No data is stored or transmitted.
+                </div>
+            </div>
+
+            <!-- Tabs: Upload File vs Paste Text -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+                <button id="resumeTabFileBtn" class="tab-btn active" style="padding: 0.45rem 1rem; font-size: 0.88rem;" onclick="switchResumeTab('file')">
+                    <i class="fa-solid fa-file-pdf"></i> Upload File (.pdf, .txt)
+                </button>
+                <button id="resumeTabPasteBtn" class="tab-btn" style="padding: 0.45rem 1rem; font-size: 0.88rem;" onclick="switchResumeTab('paste')">
+                    <i class="fa-solid fa-clipboard"></i> Paste Resume Text
+                </button>
+            </div>
+
+            <!-- Tab 1: File Upload Drop Zone -->
+            <div id="resumeFileSection">
+                <div id="resumeDropzone" class="resume-dropzone" onclick="document.getElementById('resumeFileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.25rem; color: #6366f1; margin-bottom: 0.6rem;"></i>
+                    <p style="font-weight: 700; margin-bottom: 0.25rem; color: var(--text-heading);">Drag &amp; drop your resume, or <span style="color: var(--primary); text-decoration: underline;">Browse Files</span></p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Supports PDF and Plain Text (.pdf, .txt)</p>
+                    <input type="file" id="resumeFileInput" accept=".pdf,.txt,.md" style="display: none;" onchange="handleResumeFileSelect(event)">
+                </div>
+                <div id="selectedFileInfo" style="display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: 8px; font-size: 0.85rem; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <i class="fa-solid fa-file-lines" style="color: var(--primary); font-size: 1.1rem;"></i>
+                        <span id="selectedFileName" style="font-weight: 700; color: var(--text-heading);">resume.pdf</span>
+                        <span id="selectedFileSize" style="color: var(--text-muted); font-size: 0.78rem;"></span>
+                    </div>
+                    <button type="button" onclick="clearSelectedFile()" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem 0.5rem;" title="Remove file"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Paste Text Area -->
+            <div id="resumePasteSection" style="display: none;">
+                <textarea id="resumePasteText" class="search-input-main" style="width: 100%; height: 160px; font-family: monospace; font-size: 0.85rem; padding: 0.85rem; resize: vertical; line-height: 1.4;" placeholder="Paste your resume text here (experience, skills, certifications, degrees, job titles)..."></textarea>
+            </div>
+
+            <!-- Matching Options -->
+            <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+                <label style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--text-body); margin-bottom: 0.6rem;">
+                    <input type="checkbox" id="resumeFullTimeOnly" checked style="width: 16px; height: 16px; accent-color: var(--primary);">
+                    <span>Only show Full-Time positions (Qualifies for TVCS School Admission)</span>
+                </label>
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <span>Match Relevance Threshold:</span>
+                    <select id="resumeMinMatch" class="filter-select" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                        <option value="25">Broad (25%+ Match - More Jobs)</option>
+                        <option value="40" selected>Balanced (40%+ Match - Recommended)</option>
+                        <option value="55">Strict (55%+ Match - Top Precision)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="page-btn" style="padding: 0.65rem 1.25rem;" onclick="closeModal('resumeModal')">Cancel</button>
+                <button type="button" id="btnRunResumeMatch" class="btn-apply" style="padding: 0.65rem 1.5rem; flex-grow: 0;" onclick="processResumeMatch()">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Find Best Job Matches
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
@@ -1181,6 +1412,251 @@
         let allEmployers = [];
         let savedJobIds = new Set();
         let currentTab = 'jobs';
+        let resumeMatchedJobs = null;
+        let selectedResumeFile = null;
+
+        // Resume Matcher View Switching
+        function switchResumeTab(mode) {
+            const fileSec = document.getElementById('resumeFileSection');
+            const pasteSec = document.getElementById('resumePasteSection');
+            const fileBtn = document.getElementById('resumeTabFileBtn');
+            const pasteBtn = document.getElementById('resumeTabPasteBtn');
+
+            if (mode === 'file') {
+                fileSec.style.display = 'block';
+                pasteSec.style.display = 'none';
+                fileBtn.classList.add('active');
+                pasteBtn.classList.remove('active');
+            } else {
+                fileSec.style.display = 'none';
+                pasteSec.style.display = 'block';
+                fileBtn.classList.remove('active');
+                pasteBtn.classList.add('active');
+            }
+        }
+
+        function handleResumeFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            setResumeFile(file);
+        }
+
+        function setResumeFile(file) {
+            selectedResumeFile = file;
+            document.getElementById('selectedFileName').innerText = file.name;
+            document.getElementById('selectedFileSize').innerText = `(${(file.size / 1024).toFixed(1)} KB)`;
+            document.getElementById('selectedFileInfo').style.display = 'flex';
+            document.getElementById('resumeDropzone').style.borderColor = '#10b981';
+        }
+
+        function clearSelectedFile() {
+            selectedResumeFile = null;
+            document.getElementById('resumeFileInput').value = '';
+            document.getElementById('selectedFileInfo').style.display = 'none';
+            document.getElementById('resumeDropzone').style.borderColor = '#cbd5e1';
+        }
+
+        async function extractResumeText() {
+            const isPasteActive = document.getElementById('resumePasteSection').style.display === 'block';
+            if (isPasteActive) {
+                const text = document.getElementById('resumePasteText').value.trim();
+                if (!text) {
+                    showToast("Please paste your resume text to match.");
+                    return null;
+                }
+                return text;
+            }
+
+            if (!selectedResumeFile) {
+                const pasteVal = document.getElementById('resumePasteText').value.trim();
+                if (pasteVal) return pasteVal;
+                showToast("Please choose a resume file (.pdf, .txt) or paste your resume text.");
+                return null;
+            }
+
+            const file = selectedResumeFile;
+            const fileName = file.name.toLowerCase();
+
+            // Text or Markdown
+            if (fileName.endsWith('.txt') || fileName.endsWith('.md') || file.type.includes('text')) {
+                return await file.text();
+            }
+
+            // PDF extraction
+            if (fileName.endsWith('.pdf') || file.type.includes('pdf')) {
+                if (typeof pdfjsLib === 'undefined') {
+                    showToast("PDF parser loading... Please paste your text if this takes longer than 2 seconds.");
+                    return null;
+                }
+                try {
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let text = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        text += content.items.map(it => it.str).join(' ') + '\n';
+                    }
+                    return text;
+                } catch (err) {
+                    console.error("PDF parsing error:", err);
+                    showToast("Could not parse this PDF. Please copy-paste your resume into the Paste tab.");
+                    return null;
+                }
+            }
+
+            return await file.text();
+        }
+
+        function calculateResumeMatches(resumeText, fullTimeOnly = true, minScoreThreshold = 40) {
+            const stopWords = new Set([
+                'and','the','for','with','in','of','to','at','a','or','on','is','as','an','by','be','are','this','that','our','all','from',
+                'with','your','has','have','will','was','were','their','them','about','been','able','must','should','would','they'
+            ]);
+
+            const cleanText = resumeText.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+            const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+            const resumeTokens = new Set(words.filter(w => w.length > 2 && !stopWords.has(w)));
+
+            // 2-word and 3-word n-grams
+            const ngrams = new Set();
+            for (let i = 0; i < words.length - 1; i++) {
+                const w1 = words[i], w2 = words[i+1];
+                if (w1.length > 2 && w2.length > 2) {
+                    ngrams.add(`${w1} ${w2}`);
+                }
+                if (i < words.length - 2) {
+                    const w3 = words[i+2];
+                    if (w1.length > 2 && w2.length > 2 && w3.length > 2) {
+                        ngrams.add(`${w1} ${w2} ${w3}`);
+                    }
+                }
+            }
+
+            const scored = [];
+
+            for (const job of allJobs) {
+                if (fullTimeOnly && !job.TVCS_Qualifying) continue;
+
+                const titleLower = job.Job_Title.toLowerCase();
+                const descLower = (job.Description || '').toLowerCase();
+                const compLower = job.Company.toLowerCase();
+                const locLower = (job.Plaza_Location || '').toLowerCase();
+                const fullJobText = `${titleLower} ${compLower} ${descLower} ${locLower}`;
+
+                let score = 0;
+                const matchedSkills = [];
+
+                // N-gram multi-word match
+                for (const ng of ngrams) {
+                    if (titleLower.includes(ng)) {
+                        score += 35;
+                        if (!matchedSkills.includes(ng) && matchedSkills.length < 5) matchedSkills.push(ng);
+                    } else if (descLower.includes(ng) || fullJobText.includes(ng)) {
+                        score += 15;
+                        if (!matchedSkills.includes(ng) && matchedSkills.length < 5) matchedSkills.push(ng);
+                    }
+                }
+
+                // Single word match
+                const jobTokens = new Set(fullJobText.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w)));
+                for (const token of jobTokens) {
+                    if (resumeTokens.has(token)) {
+                        if (titleLower.includes(token)) {
+                            score += 18;
+                            if (!matchedSkills.includes(token) && matchedSkills.length < 5) matchedSkills.push(token);
+                        } else if (compLower.includes(token)) {
+                            score += 8;
+                        } else {
+                            score += 4;
+                            if (!matchedSkills.includes(token) && matchedSkills.length < 5) matchedSkills.push(token);
+                        }
+                    }
+                }
+
+                // TVCS Category Priority Boost
+                if (job.Category === 'CATEGORY I') score += 12;
+                else if (job.Category === 'CATEGORY II') score += 8;
+                else if (job.Category === 'CATEGORY III') score += 5;
+
+                // Full-time compliance boost
+                if (job.TVCS_Qualifying) score += 10;
+
+                // Normalize percentage (20% - 98%)
+                const percentage = Math.min(98, Math.max(15, Math.round((score / 125) * 100)));
+
+                if (percentage >= minScoreThreshold) {
+                    scored.push({
+                        ...job,
+                        matchScore: percentage,
+                        matchedSkills: matchedSkills
+                    });
+                }
+            }
+
+            // Sort descending by matchScore, then by TVCS Priority Tier
+            scored.sort((a, b) => {
+                if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+                return a.Priority_Tier - b.Priority_Tier;
+            });
+
+            return scored;
+        }
+
+        async function processResumeMatch() {
+            const btn = document.getElementById('btnRunResumeMatch');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing Resume...';
+            btn.disabled = true;
+
+            try {
+                const resumeText = await extractResumeText();
+                if (!resumeText || resumeText.length < 25) {
+                    showToast("Please provide more resume text (at least 25 characters) to analyze.");
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    return;
+                }
+
+                const fullTimeOnly = document.getElementById('resumeFullTimeOnly').checked;
+                const minThreshold = parseInt(document.getElementById('resumeMinMatch').value, 10) || 40;
+
+                const matches = calculateResumeMatches(resumeText, fullTimeOnly, minThreshold);
+
+                if (matches.length === 0) {
+                    showToast("No positions met the minimum match threshold. Try selecting Broad relevance.");
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    return;
+                }
+
+                resumeMatchedJobs = matches;
+                closeModal('resumeModal');
+                switchTab('jobs');
+
+                // Display active match banner
+                const banner = document.getElementById('resumeMatchBanner');
+                banner.style.display = 'flex';
+                document.getElementById('resumeMatchCount').innerText = matches.length;
+
+                showToast(`Found ${matches.length} matching jobs for your resume!`);
+                applyFilters(true);
+            } catch (e) {
+                console.error("Error processing resume:", e);
+                showToast("Failed to analyze resume. Please try pasting text.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function clearResumeMatch() {
+            resumeMatchedJobs = null;
+            document.getElementById('resumeMatchBanner').style.display = 'none';
+            showToast("Cleared resume matching filter");
+            applyFilters(true);
+        }
         const ITEMS_PER_PAGE = 25;
         let currentPage = 1;
 
@@ -1325,8 +1801,9 @@
         }
 
         function updateTabCounters(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal) {
+            const jobsPool = (currentTab !== 'saved' && resumeMatchedJobs) ? resumeMatchedJobs : allJobs;
             // Count matching active jobs
-            const matchingJobsCount = allJobs.filter(job => {
+            const matchingJobsCount = jobsPool.filter(job => {
                 if (qualifyingOnly && !job.TVCS_Qualifying) return false;
                 if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
                 if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
@@ -1427,8 +1904,9 @@
 
         function renderJobs(searchVal, qualifyingOnly, categoryVal, plazaVal, employerVal, savedOnly = false) {
             const container = savedOnly ? document.getElementById('savedView') : document.getElementById('jobsView');
+            const jobsPool = (!savedOnly && resumeMatchedJobs) ? resumeMatchedJobs : allJobs;
 
-            const filtered = allJobs.filter(job => {
+            const filtered = jobsPool.filter(job => {
                 const jobId = job.Job_Link || (job.Job_Title + job.Company);
                 if (savedOnly && !savedJobIds.has(jobId)) return false;
                 if (qualifyingOnly && !job.TVCS_Qualifying) return false;
@@ -1490,6 +1968,11 @@
                     <div class="job-card">
                         <div class="card-top">
                             <div class="card-badges-row">
+                                ${job.matchScore ? `
+                                    <span class="match-score-badge" title="Compatibility with your uploaded resume">
+                                        <i class="fa-solid fa-star"></i> ${job.matchScore}% Match
+                                    </span>
+                                ` : ''}
                                 <span class="priority-badge ${catClass}">
                                     <i class="fa-solid fa-award"></i> ${job.Priority_Label || job.Category}
                                 </span>
@@ -1508,6 +1991,15 @@
                             <div class="company-name">
                                 <i class="fa-regular fa-building"></i> ${escapeHtml(job.Company)}
                             </div>
+
+                            ${job.matchedSkills && job.matchedSkills.length > 0 ? `
+                                <div class="matched-skills-box">
+                                    <span class="matched-skills-label"><i class="fa-solid fa-check-double"></i> Matched Resume Skills:</span>
+                                    <div class="matched-skills-list">
+                                        ${job.matchedSkills.map(s => `<span class="skill-chip">${escapeHtml(s)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
 
                             <div class="meta-list">
                                 <div class="meta-item">
@@ -1915,7 +2407,34 @@
         });
 
         // Initialize on DOM load
-        document.addEventListener('DOMContentLoaded', initData);
+        document.addEventListener('DOMContentLoaded', () => {
+            initData();
+
+            // Resume Drag & Drop Setup
+            const dropzone = document.getElementById('resumeDropzone');
+            if (dropzone) {
+                ['dragenter', 'dragover'].forEach(name => {
+                    dropzone.addEventListener(name, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.add('dragover');
+                    });
+                });
+                ['dragleave', 'drop'].forEach(name => {
+                    dropzone.addEventListener(name, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.remove('dragover');
+                    });
+                });
+                dropzone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    if (dt.files && dt.files.length > 0) {
+                        setResumeFile(dt.files[0]);
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
