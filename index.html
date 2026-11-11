@@ -1217,7 +1217,7 @@
                 showToast("Saved job to your list!");
             }
             saveSavedState();
-            renderCurrentView();
+            applyFilters(false);
         }
 
         function showToast(msg) {
@@ -1324,6 +1324,70 @@
             });
         }
 
+        function updateTabCounters(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal) {
+            // Count matching active jobs
+            const matchingJobsCount = allJobs.filter(job => {
+                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
+                if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
+                if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
+                if (searchVal) {
+                    const matchText = `${job.Job_Title} ${job.Company} ${job.Plaza_Location} ${job.Location} ${job.Category} ${job.Phone || ''} ${job.Description || ''}`.toLowerCase();
+                    return matchText.includes(searchVal);
+                }
+                return true;
+            }).length;
+
+            // Count matching employers
+            const matchingEmployers = allEmployers.filter(emp => {
+                if (categoryVal !== 'ALL' && emp.Category !== categoryVal) return false;
+                if (plazaVal !== 'ALL' && (emp.Plaza !== plazaVal && emp.Plaza_Location !== plazaVal)) return false;
+                if (employerVal !== 'ALL' && emp.Company !== employerVal) return false;
+                if (searchVal) {
+                    const matchText = `${emp.Company} ${emp.Plaza} ${emp.Address || ''} ${emp.Phone || ''} ${emp.Contact_Person || ''} ${emp.Category} ${emp.Qualifies_Description || ''}`.toLowerCase();
+                    return matchText.includes(searchVal);
+                }
+                return true;
+            });
+
+            const matchingEmployersCount = activelyHiringOnly 
+                ? matchingEmployers.filter(e => e.Is_Hiring).length 
+                : matchingEmployers.length;
+
+            const matchingHiringCount = matchingEmployers.filter(e => e.Is_Hiring).length;
+
+            // Count matching saved jobs
+            const matchingSavedCount = allJobs.filter(job => {
+                const jobId = job.Job_Link || (job.Job_Title + job.Company);
+                if (!savedJobIds.has(jobId)) return false;
+                if (qualifyingOnly && !job.TVCS_Qualifying) return false;
+                if (categoryVal !== 'ALL' && job.Category !== categoryVal) return false;
+                if (plazaVal !== 'ALL' && job.Plaza_Location !== plazaVal) return false;
+                if (employerVal !== 'ALL' && job.Company !== employerVal) return false;
+                if (searchVal) {
+                    const matchText = `${job.Job_Title} ${job.Company} ${job.Plaza_Location} ${job.Location} ${job.Category} ${job.Phone || ''} ${job.Description || ''}`.toLowerCase();
+                    return matchText.includes(searchVal);
+                }
+                return true;
+            }).length;
+
+            // Update DOM badge counts dynamically
+            const activeJobsBadge = document.getElementById('activeJobsCountBadge');
+            if (activeJobsBadge) activeJobsBadge.innerText = matchingJobsCount;
+
+            const allEmployersBadge = document.getElementById('allEmployersCountBadge');
+            if (allEmployersBadge) allEmployersBadge.innerText = matchingEmployersCount;
+
+            const savedTabBadge = document.getElementById('savedTabCountBadge');
+            if (savedTabBadge) savedTabBadge.innerText = matchingSavedCount;
+
+            const savedHeaderBadge = document.getElementById('savedCountHeader');
+            if (savedHeaderBadge) savedHeaderBadge.innerText = savedJobIds.size;
+
+            const hiringLabel = document.getElementById('hiringCountLabel');
+            if (hiringLabel) hiringLabel.innerText = matchingHiringCount;
+        }
+
         function applyFilters(resetPage = true) {
             if (resetPage) {
                 currentPage = 1;
@@ -1337,6 +1401,9 @@
             const categoryVal = document.getElementById('categoryFilter').value;
             const plazaVal = document.getElementById('plazaFilter').value;
             const employerVal = document.getElementById('employerFilter').value;
+
+            // Dynamically update all tab badges on every filter/search change
+            updateTabCounters(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal);
 
             renderCurrentView(searchVal, qualifyingOnly, activelyHiringOnly, categoryVal, plazaVal, employerVal);
         }
@@ -1387,6 +1454,13 @@
 
             document.getElementById('visibleCount').innerText = totalItems;
             document.getElementById('visibleRange').innerText = totalItems === 0 ? '0' : `${startIdx + 1}–${endIdx}`;
+            if (!savedOnly) {
+                const activeJobsBadge = document.getElementById('activeJobsCountBadge');
+                if (activeJobsBadge) activeJobsBadge.innerText = totalItems;
+            } else {
+                const savedTabBadge = document.getElementById('savedTabCountBadge');
+                if (savedTabBadge) savedTabBadge.innerText = totalItems;
+            }
 
             if (totalItems === 0) {
                 container.innerHTML = `
@@ -1513,6 +1587,8 @@
 
             document.getElementById('visibleCount').innerText = totalItems;
             document.getElementById('visibleRange').innerText = totalItems === 0 ? '0' : `${startIdx + 1}–${endIdx}`;
+            const allEmployersBadge = document.getElementById('allEmployersCountBadge');
+            if (allEmployersBadge) allEmployersBadge.innerText = totalItems;
 
             if (totalItems === 0) {
                 container.innerHTML = `
