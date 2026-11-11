@@ -139,7 +139,14 @@ def format_phone(phone_raw):
     return str(phone_raw).strip()
 
 
-def resolve_direct_career_url(comp_name, web_raw, plaza_name, cache):
+FREE_EMAIL_DOMAINS = {
+    'gmail.com', 'yahoo.com', 'aol.com', 'comcast.net', 'outlook.com',
+    'hotmail.com', 'icloud.com', 'msn.com', 'sbcglobal.net', 'me.com',
+    'bellsouth.net', 'verizon.net', 'cfl.rr.com', 'earthlink.net',
+    'embarqmail.com', 'att.net', 'cox.net', 'charter.net'
+}
+
+def resolve_direct_career_url(comp_name, web_raw, plaza_name, cache, email_raw=""):
     """Resolves the most accurate Careers / ATS URL for an employer with geo-intent."""
     clean_key = comp_name.strip()
     c_lower = clean_key.lower()
@@ -149,6 +156,11 @@ def resolve_direct_career_url(comp_name, web_raw, plaza_name, cache):
         return cache[clean_key], True
 
     # 2. Check Brand Keywords (Panera, Starbucks, 4 Rivers, Publix, etc.)
+    for brand_kw, career_url in cache.items():
+        if brand_kw.lower() in c_lower:
+            cache[clean_key] = career_url
+            return career_url, True
+
     for brand_kw, career_url in BRAND_CAREERS_MAP.items():
         if brand_kw in c_lower:
             cache[clean_key] = career_url
@@ -158,58 +170,18 @@ def resolve_direct_career_url(comp_name, web_raw, plaza_name, cache):
     w = str(web_raw).strip() if web_raw and not pd.isna(web_raw) else ""
     if w and w.lower() not in ['none', 'nan', 'null', 'n/a', 'no', '']:
         base_url = w if w.startswith('http://') or w.startswith('https://') else f"https://{w}"
+        cache[clean_key] = base_url
+        return base_url, True
 
-        try:
-            req = urllib.request.Request(base_url, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=4, context=ctx) as resp:
-                final_url = resp.geturl()
-                html = resp.read().decode('utf-8', errors='ignore')
-                soup = BeautifulSoup(html, 'html.parser')
+    # 4. Check if company has an official corporate email domain
+    if email_raw and '@' in str(email_raw):
+        dom = str(email_raw).split('@')[-1].lower().strip()
+        if dom and dom not in FREE_EMAIL_DOMAINS and '.' in dom:
+            email_site = f"https://www.{dom}"
+            cache[clean_key] = email_site
+            return email_site, True
 
-                for a in soup.find_all('a', href=True):
-                    href = a['href'].strip()
-                    text = a.get_text().strip().lower()
-                    href_lower = href.lower()
-
-                    for ats in KNOWN_ATS_DOMAINS:
-                        if ats in href_lower:
-                            full_url = urllib.parse.urljoin(final_url, href)
-                            cache[clean_key] = full_url
-                            return full_url, True
-
-                    if any(k in text for k in ['career', 'careers', 'jobs', 'join our team', 'work with us', 'employment', 'now hiring']):
-                        if not any(bad in href_lower for bad in ['facebook', 'twitter', 'linkedin.com/sharing', 'javascript:', '#', 'mailto:']):
-                            full_url = urllib.parse.urljoin(final_url, href)
-                            cache[clean_key] = full_url
-                            return full_url, True
-
-                    elif any(k in href_lower for k in ['/careers', '/jobs', '/employment', '/join-our-team', '/work-with-us']):
-                        full_url = urllib.parse.urljoin(final_url, href)
-                        cache[clean_key] = full_url
-                        return full_url, True
-
-                # Check common paths
-                parsed = urllib.parse.urlparse(base_url)
-                root = f"{parsed.scheme}://{parsed.netloc}"
-                for path in ["/careers/", "/careers", "/jobs/", "/employment"]:
-                    test_url = urllib.parse.urljoin(root, path)
-                    try:
-                        req_test = urllib.request.Request(test_url, headers=HEADERS)
-                        with urllib.request.urlopen(req_test, timeout=3, context=ctx) as r_test:
-                            if r_test.status == 200:
-                                cache[clean_key] = r_test.geturl()
-                                return r_test.geturl(), True
-                    except Exception:
-                        pass
-
-                cache[clean_key] = base_url
-                return base_url, True
-
-        except Exception:
-            cache[clean_key] = base_url
-            return base_url, True
-
-    # 4. Geo-Targeted Careers Search Fallback (Scoped specifically to The Villages/Middleton/Plaza)
+    # 5. Geo-Targeted Careers Search Fallback (Scoped specifically to The Villages/Middleton/Plaza)
     geo_plaza = plaza_name if plaza_name and plaza_name != "The Villages Commercial Area" else "The Villages"
     q = urllib.parse.quote(f'"{comp_name}" "{geo_plaza}" Florida careers jobs employment application')
     fallback_url = f"https://www.google.com/search?q={q}"
@@ -444,10 +416,59 @@ async def harvest_jacobs_jobs(browser):
 
 
 # ---------------------------------------------------------------------------
-# 5. Harvest TVCS Official Marketplace & Resolve Direct Career URLs
+# 5. Harvest 4 Rivers Smokehouse Active Positions (Workstream ATS - Category III)
+# ---------------------------------------------------------------------------
+def harvest_four_rivers_jobs():
+    print("\n[5/6] Harvesting 4 Rivers Smokehouse (Workstream ATS - Category III)...")
+    jobs = []
+    url = "https://www.workstream.us/j/277e58a2/4-rivers-smokehouse/positions?locale=en&referer_source=https%3A%2F%2Fwww.4rsmokehouse.com%2F&page=1&radius=10&lat=28.76320339999999&lng=-81.91528439999999&geo=Okahumpka%2C%20FL%2034762%2C%20USA"
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            html = resp.read().decode('utf-8', errors='ignore')
+            soup = BeautifulSoup(html, 'html.parser')
+            for a in soup.find_all('a'):
+                href = a.get('href', '')
+                if '/middleton-77464/' in href and not href.endswith('/middleton-77464?locale=en'):
+                    title = a.get_text(' ', strip=True)
+                    if not title or any(j['Job_Link'] == href for j in jobs):
+                        continue
+
+                    card = a.find_parent('div', class_=lambda c: c and any(x in c.lower() for x in ['card', 'item', 'position'])) or a.parent
+                    card_text = ' '.join(card.stripped_strings) if card else ''
+
+                    pay_match = re.search(r'\$[\d\.,]+\s*(?:-\s*[\d\.,]+)?\s*(?:per\s+hour|per\s+year|/hr|/yr)?', card_text, re.I)
+                    salary = pay_match.group(0).strip() if pay_match else ("Competitive Manager Salary + Benefits" if "manager" in title.lower() else "Competitive Hourly + Tips")
+                    full_time = "full-time" in card_text.lower() or "manager" in title.lower()
+
+                    jobs.append({
+                        "Job_Title": f"4 Rivers Smokehouse - {title}",
+                        "Company": "4 Rivers Smokehouse",
+                        "Category": "CATEGORY III",
+                        "Priority_Tier": 3,
+                        "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+                        "Employment_Type": "Full-Time" if full_time else "Part-Time",
+                        "TVCS_Qualifying": full_time,
+                        "Plaza_Location": "Middleton Downtown",
+                        "Location": "7679 Middleton Dr, Middleton, FL 34762",
+                        "Phone": "(352) 654-1185",
+                        "Estimated_Salary": salary,
+                        "Source": "Workstream (Official ATS)",
+                        "Job_Link": href,
+                        "Posted_Date": "Active Requisition",
+                        "Description": f"4 Rivers Smokehouse position at 7679 Middleton Dr, Middleton, FL 34762. {'Full-time continuous employment qualifies dependents for TVCS Category III admission.' if full_time else 'Part-time position.'}"
+                    })
+        print(f"      ✓ 4 Rivers: Captured {len(jobs)} active positions.")
+    except Exception as e:
+        print(f"      [!] Error harvesting 4 Rivers jobs: {e}")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# 6. Harvest TVCS Official Marketplace & Resolve Direct Career URLs
 # ---------------------------------------------------------------------------
 def harvest_official_tvcs_marketplace(active_jobs, cache):
-    print("\n[5/5] Harvesting Official TVCS Marketplace & Resolving Direct Career URLs...")
+    print("\n[6/6] Harvesting Official TVCS Marketplace & Resolving Direct Career URLs...")
     employers = []
     
     # Map active jobs by company
@@ -479,14 +500,13 @@ def harvest_official_tvcs_marketplace(active_jobs, cache):
                 phone_tel = re.sub(r'\D', '', str(phone_raw))
                 
                 web_raw = b.get('webAddress', '')
-                
-                # Resolve direct career page or official website
-                career_url, has_direct = resolve_direct_career_url(comp_name, web_raw, plaza, cache)
-                if has_direct:
-                    resolved_careers_count += 1
-
                 email_raw = str(b.get('email', '') or b.get('verifyEmail', '')).strip()
                 contact_raw = str(b.get('contactName', '') or b.get('verifyContact', '')).strip()
+                
+                # Resolve direct career page or official website
+                career_url, has_direct = resolve_direct_career_url(comp_name, web_raw, plaza, cache, email_raw)
+                if has_direct:
+                    resolved_careers_count += 1
 
                 street = str(b.get('address', '')).strip()
                 city = str(b.get('city', 'The Villages')).strip()
@@ -642,25 +662,9 @@ async def main():
         all_jobs.extend(jacobs_jobs)
         await browser.close()
 
-    # 5. Add 4 Rivers Smokehouse Active Positions (Middleton/Okahumpka location)
-    four_rivers_url = career_cache.get("4 Rivers Smokehouse", "https://www.workstream.us/j/277e58a2/4-rivers-smokehouse/positions?locale=en&referer_source=https%3A%2F%2Fwww.4rsmokehouse.com%2F&page=1&radius=10&lat=28.76320339999999&lng=-81.91528439999999&geo=Okahumpka%2C%20FL%2034762%2C%20USA")
-    all_jobs.append({
-        "Job_Title": "4 Rivers Smokehouse Team Member / Shift Lead (Middleton)",
-        "Company": "4 Rivers Smokehouse",
-        "Category": "CATEGORY III",
-        "Priority_Tier": 3,
-        "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-        "Employment_Type": "Full-Time",
-        "TVCS_Qualifying": True,
-        "Plaza_Location": "Middleton Downtown",
-        "Location": "Middleton, FL 34762",
-        "Phone": "(844) 474-8377",
-        "Estimated_Salary": "Competitive Hourly + Tips & Benefits",
-        "Source": "Workstream Official ATS",
-        "Job_Link": four_rivers_url,
-        "Posted_Date": "Active Requisition",
-        "Description": "4 Rivers Smokehouse restaurant team member at Middleton Downtown. Full-time continuous employment qualifies dependents for TVCS Category III admission."
-    })
+    # 5. Harvest 4 Rivers Smokehouse Active Positions (Workstream ATS - Category III)
+    four_rivers_jobs = harvest_four_rivers_jobs()
+    all_jobs.extend(four_rivers_jobs)
 
     # Deduplicate verified jobs
     unique_jobs = []
