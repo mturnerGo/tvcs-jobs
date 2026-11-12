@@ -1,0 +1,89 @@
+{
+  "description": "Declarative registry of approved TVCS company job feeds and ATS endpoints",
+  "version": "1.0",
+  "feeds": [
+    {
+      "id": "uf_health_villages",
+      "company": "UF Health (The Villages Hospital)",
+      "protocol": "icims_jibe",
+      "url": "https://jobs.ufhealth.org/api/jobs",
+      "params": {
+        "stretchUnit": "MILES",
+        "stretch": 10,
+        "location": "The Villages",
+        "limit": 100
+      }
+    },
+    {
+      "id": "the_villages_health",
+      "company": "The Villages Health / CenterWell",
+      "protocol": "workday_cxs",
+      "base_url": "https://humana.wd5.myworkdayjobs.com/wday/cxs/humana/CenterWell_External_Career_Site",
+      "search_queries": ["Villages", "Lady Lake"]
+    },
+    {
+      "id": "tvcs_schools",
+      "company": "The Villages Charter School",
+      "protocol": "adp_wfn",
+      "cid": "9d9691d5-3462-4689-a406-011d044de96e"
+    },
+    {
+      "id": "the_villages_operating",
+      "company": "The Villages Operating Entities",
+      "protocol": "adp_wfn",
+      "cid": "ea774d00-96ec-4432-b137-9f604cbb5c8e"
+    },
+    {
+      "id": "vccdd_district",
+      "company": "Village Center Community Dev. District",
+      "protocol": "adp_wfn",
+      "cid": "c804bf4f-d461-4f38-861c-c50199110eeb"
+    },
+    {
+      "id": "wildwood_city",
+      "company": "City of Wildwood",
+      "protocol": "neogov",
+      "agency": "wildwoodfl"
+    },
+    {
+      "id": "lake_sumter_state_college",
+      "company": "Lake-Sumter State College",
+      "protocol": "neogov",
+      "agency": "lsscedu"
+    },
+    {
+      "id": "sumter_county_bocc",
+      "company": "Sumter County BOCC",
+      "protocol": "neogov",
+      "agency": "sumtercountyfl"
+    },
+    {
+      "id": "fmk_hospitality",
+      "company": "FMK Restaurant Group",
+      "protocol": "clearcompany_api",
+      "api_uuid": "9ae853b3-e7d0-cc4c-4567-528244529a41",
+      "apply_base": "https://fmkhospitalitygroup.clearcompany.com/careers/jobs"
+    },
+    {
+      "id": "seacoast_bank",
+      "company": "Seacoast National Bank",
+      "protocol": "ultipro_board",
+      "tenant": "SEA1007SEACO",
+      "board": "7851737e-66c7-908f-77e9-6d69f4eb0ead",
+      "query": "The Villages"
+    },
+    {
+      "id": "down_to_earth",
+      "company": "Down To Earth Landscaping",
+      "protocol": "dayforce_playwright",
+      "portal_url": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL"
+    },
+    {
+      "id": "four_rivers",
+      "company": "4 Rivers Smokehouse",
+      "protocol": "workstream",
+      "slug": "4-rivers-smokehouse",
+      "token": "277e58a2"
+    }
+  ]
+}
