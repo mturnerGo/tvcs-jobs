@@ -348,6 +348,147 @@ def driver_dayforce_playwright(feed):
         print(f"[Dayforce] Error for {company}: {e}")
     return jobs
 
+# 9. Greenhouse Board JSON API Driver (e.g. Toojay's Gourmet Deli)
+def driver_greenhouse(feed):
+    jobs = []
+    board = feed['board']
+    company = feed['company']
+    url = f"https://boards-api.greenhouse.io/v1/boards/{board}/jobs"
+    
+    try:
+        data = fetch_json(url)
+        results = data.get('jobs', [])
+        filter_locations = feed.get('filter_locations', ['villages', 'wildwood', 'lady lake', 'sumter', 'lake county'])
+        
+        for item in results:
+            loc = item.get('location', {}).get('name', '')
+            # If location matches or no location filter specified
+            if filter_locations:
+                loc_lower = loc.lower()
+                if not any(k in loc_lower for k in filter_locations):
+                    continue
+            
+            title = item.get('title')
+            if not title:
+                continue
+            
+            jobs.append({
+                "Job_Title": title.strip(),
+                "Company": company,
+                "Estimated_Salary": "$15 - $25/hr or Salary (DOE)",
+                "Location": loc or "The Villages, FL",
+                "Job_Link": item.get('absolute_url') or f"https://boards.greenhouse.io/{board}",
+                "Description": f"Active position with {company}.",
+                "Employment_Type": "Full-Time"
+            })
+    except Exception as e:
+        print(f"[Greenhouse] Error for {company}: {e}")
+    return jobs
+
+# 10. Paylocity Job Board Driver (e.g. Oak & Stone, Sonny's BBQ)
+def driver_paylocity(feed):
+    jobs = []
+    url = feed['url']
+    company = feed['company']
+    filter_locations = feed.get('filter_locations', ['villages', 'wildwood', 'lady lake', 'middleton', 'eastport'])
+
+    try:
+        req = urllib.request.Request(url, headers=DEFAULT_HEADERS)
+        html = urllib.request.urlopen(req, context=SSL_CTX, timeout=12).read().decode('utf-8', errors='ignore')
+        m = re.findall(r'window\.[a-zA-Z0-9_]+\s*=\s*(\{.*?\});', html, re.DOTALL)
+        for item in m:
+            try:
+                data = json.loads(item)
+                if 'Jobs' in data:
+                    for j in data['Jobs']:
+                        title = j.get('JobTitle')
+                        if not title:
+                            continue
+                        job_id = j.get('JobId')
+                        loc_dict = j.get('JobLocation') or {}
+                        city = loc_dict.get('City', '')
+                        state = loc_dict.get('State', 'FL')
+                        addr = loc_dict.get('Address', '')
+                        full_loc = f"{city}, {state}".strip(", ")
+                        
+                        if filter_locations:
+                            search_target = f"{city} {addr} {loc_dict.get('Name', '')}".lower()
+                            if not any(k in search_target for k in filter_locations):
+                                continue
+
+                        job_url = f"https://recruiting.paylocity.com/recruiting/jobs/Details/{job_id}" if job_id else url
+                        jobs.append({
+                            "Job_Title": title.strip(),
+                            "Company": company,
+                            "Estimated_Salary": "$16 - $26/hr or Salary (DOE)",
+                            "Location": full_loc or "The Villages, FL",
+                            "Job_Link": job_url,
+                            "Description": f"Active position with {company}.",
+                            "Employment_Type": "Full-Time"
+                        })
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[Paylocity] Error for {company}: {e}")
+    return jobs
+
+# 11. Schema.org Universal JobPosting Driver
+def driver_schema_org(feed):
+    jobs = []
+    url = feed['url']
+    company = feed['company']
+    filter_locations = feed.get('filter_locations', ['the villages', 'villages', 'wildwood', 'lady lake', 'sumter'])
+
+    try:
+        req = urllib.request.Request(url, headers=DEFAULT_HEADERS)
+        html = urllib.request.urlopen(req, context=SSL_CTX, timeout=12).read().decode('utf-8', errors='ignore')
+        soup = BeautifulSoup(html, 'html.parser')
+        scripts = soup.find_all('script', type='application/ld+json')
+        
+        for s in scripts:
+            try:
+                raw = s.string or s.text
+                if not raw or 'JobPosting' not in raw:
+                    continue
+                data = json.loads(raw.strip())
+                items = data if isinstance(data, list) else (data.get('@graph', [data]) if isinstance(data, dict) else [])
+                for it in items:
+                    if isinstance(it, dict) and it.get('@type') in ['JobPosting', 'http://schema.org/JobPosting']:
+                        title = it.get('title') or it.get('name')
+                        if not title:
+                            continue
+                        loc_str = ""
+                        loc = it.get('jobLocation')
+                        if isinstance(loc, dict):
+                            addr = loc.get('address')
+                            if isinstance(addr, dict):
+                                loc_str = f"{addr.get('addressLocality', '')} {addr.get('addressRegion', '')}".strip()
+                            elif isinstance(addr, str):
+                                loc_str = addr
+                        
+                        if filter_locations and loc_str:
+                            if not any(k in loc_str.lower() for k in filter_locations):
+                                continue
+
+                        job_url = it.get('url') or url
+                        if not job_url.startswith('http'):
+                            job_url = urllib.parse.urljoin(url, job_url)
+                        
+                        jobs.append({
+                            "Job_Title": title.strip(),
+                            "Company": company,
+                            "Estimated_Salary": "$18 - $30/hr or Salary (DOE)",
+                            "Location": loc_str or "The Villages, FL",
+                            "Job_Link": job_url,
+                            "Description": (it.get('description') or f"Active position with {company}.")[:300],
+                            "Employment_Type": "Full-Time"
+                        })
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[Schema.org] Error for {company}: {e}")
+    return jobs
+
 PROTOCOL_DISPATCHER = {
     'icims_jibe': driver_icims_jibe,
     'workday_cxs': driver_workday_cxs,
@@ -356,7 +497,10 @@ PROTOCOL_DISPATCHER = {
     'clearcompany_api': driver_clearcompany_api,
     'ultipro_board': driver_ultipro_board,
     'workstream': driver_workstream,
-    'dayforce_playwright': driver_dayforce_playwright
+    'dayforce_playwright': driver_dayforce_playwright,
+    'greenhouse': driver_greenhouse,
+    'paylocity': driver_paylocity,
+    'schema_org': driver_schema_org
 }
 
 def execute_driver(feed):

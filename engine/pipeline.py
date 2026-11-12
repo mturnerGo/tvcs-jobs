@@ -81,7 +81,8 @@ def run_pipeline(dry_run=False):
         if not title or not link:
             continue
 
-        key = f"{title.lower()}___{comp.lower()}"
+        loc = (job.get('Location') or '').strip().lower()
+        key = f"{title.lower()}___{comp.lower()}___{loc}"
         if link in seen_links or key in seen_keys:
             continue
 

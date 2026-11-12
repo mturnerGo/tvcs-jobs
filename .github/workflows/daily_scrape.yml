@@ -27,8 +27,8 @@ jobs:
           pip install -r requirements.txt
           playwright install --with-deps chromium
 
-      - name: Run Scraper Pipeline
-        run: python scraper.py
+      - name: Run Unified Ingestion Pipeline
+        run: python engine/pipeline.py
 
       - name: Commit and Push Updated Jobs
         run: |

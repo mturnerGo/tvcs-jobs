@@ -84,6 +84,40 @@
       "protocol": "workstream",
       "slug": "4-rivers-smokehouse",
       "token": "277e58a2"
+    },
+    {
+      "id": "florida_cancer_specialists",
+      "company": "Florida Cancer Specialists",
+      "protocol": "workday_cxs",
+      "base_url": "https://flcancer.wd1.myworkdayjobs.com/wday/cxs/flcancer/FLCancer_Careers",
+      "search_queries": ["Villages", "Wildwood", "Lady Lake"]
+    },
+    {
+      "id": "toojays_deli",
+      "company": "Toojay's - Lake Sumter Landing",
+      "protocol": "greenhouse",
+      "board": "toojaysdeli",
+      "filter_locations": ["villages", "lady lake", "wildwood"]
+    },
+    {
+      "id": "oak_and_stone",
+      "company": "Oak & Stone",
+      "protocol": "paylocity",
+      "url": "https://recruiting.paylocity.com/recruiting/jobs/All/7c5ae1d6-ff26-48a4-a2e9-ca34e2220f34/Oak-Stone-Eastport",
+      "filter_locations": ["villages", "wildwood", "middleton", "eastport"]
+    },
+    {
+      "id": "massey_services",
+      "company": "Massey Services/GreenUP Landscape Svcs",
+      "protocol": "workday_cxs",
+      "base_url": "https://masseyservices.wd5.myworkdayjobs.com/wday/cxs/masseyservices/masseyservices",
+      "search_queries": ["Villages", "Wildwood", "Lady Lake"]
+    },
+    {
+      "id": "concierge_homecare",
+      "company": "Concierge Homecare",
+      "protocol": "adp_wfn",
+      "cid": "ce2f2d73-4f05-4dc0-bee5-c701d2b36516"
     }
   ]
 }
