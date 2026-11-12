@@ -117,6 +117,12 @@ def driver_workday_cxs(feed):
                         continue
                     seen_paths.add(ext)
                     loc = p.get('locationsText', 'The Villages, FL')
+                    loc_lower = loc.lower()
+                    if 'bangalore' in loc_lower or 'india' in loc_lower:
+                        continue
+                    filter_kws = feed.get('filter_keywords')
+                    if filter_kws and not any(k in loc_lower for k in filter_kws):
+                        continue
                     clean_base = base_url.replace('/wday/cxs', '')
                     job_url = f"{clean_base}{ext}"
 
@@ -489,6 +495,50 @@ def driver_schema_org(feed):
         print(f"[Schema.org] Error for {company}: {e}")
     return jobs
 
+# 12. TalentBrew / Radancy Driver (e.g. AT&T, Chili's)
+def driver_talentbrew(feed):
+    jobs = []
+    base_url = feed['base_url']
+    company = feed['company']
+    locations = feed.get('search_locations', ['Lady Lake, FL'])
+    org_id = feed.get('org_id', '117')
+    filter_keywords = feed.get('filter_keywords', ['lady lake', 'leesburg', 'villages', 'wildwood', 'sumter'])
+
+    seen_links = set()
+    for loc in locations:
+        loc_encoded = urllib.parse.quote(loc)
+        url = f"{base_url}/search-jobs/{loc_encoded}/{org_id}/1"
+        try:
+            req = urllib.request.Request(url, headers=DEFAULT_HEADERS)
+            with urllib.request.urlopen(req, context=SSL_CTX, timeout=10) as resp:
+                html = resp.read().decode('utf-8', errors='ignore')
+                soup = BeautifulSoup(html, 'html.parser')
+                for a in soup.find_all('a', href=True):
+                    h = a['href']
+                    if '/job/' in h and h not in seen_links:
+                        parent_li = a.find_parent('li')
+                        loc_span = parent_li.find('span', class_='job-location') if parent_li else None
+                        loc_text = loc_span.get_text(strip=True) if loc_span else ''
+                        if filter_keywords and loc_text:
+                            if not any(k in loc_text.lower() for k in filter_keywords):
+                                continue
+                        title = a.get_text(strip=True)
+                        if title:
+                            seen_links.add(h)
+                            full_url = urllib.parse.urljoin(base_url, h)
+                            jobs.append({
+                                "Job_Title": title,
+                                "Company": company,
+                                "Estimated_Salary": "$45,000 - $65,000/yr (DOE + Commission)",
+                                "Location": loc_text or "The Villages / Lady Lake, FL",
+                                "Job_Link": full_url,
+                                "Description": f"Active telecommunications sales position with {company}.",
+                                "Employment_Type": "Full-Time"
+                            })
+        except Exception as e:
+            print(f"[TalentBrew] Error for {company}: {e}")
+    return jobs
+
 PROTOCOL_DISPATCHER = {
     'icims_jibe': driver_icims_jibe,
     'workday_cxs': driver_workday_cxs,
@@ -500,7 +550,8 @@ PROTOCOL_DISPATCHER = {
     'dayforce_playwright': driver_dayforce_playwright,
     'greenhouse': driver_greenhouse,
     'paylocity': driver_paylocity,
-    'schema_org': driver_schema_org
+    'schema_org': driver_schema_org,
+    'talentbrew': driver_talentbrew
 }
 
 def execute_driver(feed):

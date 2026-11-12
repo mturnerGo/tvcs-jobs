@@ -8,11 +8,12 @@ Live Deployment: [https://mturnergo.github.io/tvcs-jobs/](https://mturnergo.gith
 
 ## What Sets This Engine Apart
 
-1. **560+ Verified, Real Active Postings (No Spam, No Fake Search Links)**:
+1. **570+ Verified, Real Active Postings (No Spam, No Fake Search Links)**:
    - Sourced directly from official enterprise ATS endpoints:
      - **iCIMS REST API** (UF Health The Villages Hospital — 316+ openings)
      - **UKG Pro / UltiPro** (Seacoast National Bank — 69+ openings)
-     - **Workday CXS API** (The Villages Health / CenterWell, Florida Cancer Specialists, Massey Services)
+     - **Workday CXS API** (The Villages Health / CenterWell, Florida Cancer Specialists, Target Rolling Acres Plaza, Massey Services)
+     - **TalentBrew / Radancy Driver** (AT&T Lake Sumter Landing & Brownwood)
      - **ADP Workforce Now API** (The Villages Charter School, The Villages Operating Entities, VCCDD, Concierge Homecare)
      - **NEOGOV API** (City of Wildwood, Lake-Sumter State College, Sumter County BOCC)
      - **ClearCompany API** (FMK Restaurant Group: Bonifay, Chop House, Evans Prairie, Bluefin Grill)

@@ -118,6 +118,23 @@
       "company": "Concierge Homecare",
       "protocol": "adp_wfn",
       "cid": "ce2f2d73-4f05-4dc0-bee5-c701d2b36516"
+    },
+    {
+      "id": "att_wireless",
+      "company": "AT&T Lake Sumter Landing",
+      "protocol": "talentbrew",
+      "base_url": "https://www.att.jobs",
+      "org_id": "117",
+      "search_locations": ["Lady Lake, FL"],
+      "filter_keywords": ["lady lake", "leesburg", "villages", "wildwood", "sumter"]
+    },
+    {
+      "id": "target_rolling_acres",
+      "company": "Target - Rolling Acres Plaza",
+      "protocol": "workday_cxs",
+      "base_url": "https://target.wd5.myworkdayjobs.com/wday/cxs/target/targetcareers",
+      "search_queries": ["Lady Lake, FL", "The Villages, FL"],
+      "filter_keywords": ["the villages", "lady lake", "32159", "rolling acres"]
     }
   ]
 }
