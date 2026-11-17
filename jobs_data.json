@@ -294,7 +294,22 @@
     "Category": "CATEGORY II",
     "Priority_Tier": 2,
     "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
-    "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/4248",
+    "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/4255",
+    "Description": "Active landscaping & golf operations position with Down To Earth Landscaping.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Golf F&P Spray Technician",
+    "Company": "Down To Earth Landscaping",
+    "Estimated_Salary": "$16 - $28/hr or Salary (DOE)",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "The Villages Commercial Area",
+    "Phone": "(352) 385-7227",
+    "Category": "CATEGORY II",
+    "Priority_Tier": 2,
+    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
+    "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/3986",
     "Description": "Active landscaping & golf operations position with Down To Earth Landscaping.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -360,21 +375,6 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Golf Superintendent - Operations (Golf Recurr)",
-    "Company": "Down To Earth Landscaping",
-    "Estimated_Salary": "$16 - $28/hr or Salary (DOE)",
-    "Location": "The Villages, FL",
-    "Plaza_Location": "The Villages Commercial Area",
-    "Phone": "(352) 385-7227",
-    "Category": "CATEGORY II",
-    "Priority_Tier": 2,
-    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
-    "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/4208",
-    "Description": "Active landscaping & golf operations position with Down To Earth Landscaping.",
-    "Employment_Type": "Full-Time",
-    "TVCS_Qualifying": true
-  },
-  {
     "Job_Title": "Irrigation Production Manager",
     "Company": "Down To Earth Landscaping",
     "Estimated_Salary": "$16 - $28/hr or Salary (DOE)",
@@ -400,21 +400,6 @@
     "Priority_Tier": 2,
     "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
     "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/4034",
-    "Description": "Active landscaping & golf operations position with Down To Earth Landscaping.",
-    "Employment_Type": "Full-Time",
-    "TVCS_Qualifying": true
-  },
-  {
-    "Job_Title": "Lawncare Specialist",
-    "Company": "Down To Earth Landscaping",
-    "Estimated_Salary": "$16 - $28/hr or Salary (DOE)",
-    "Location": "The Villages, FL",
-    "Plaza_Location": "The Villages Commercial Area",
-    "Phone": "(352) 385-7227",
-    "Category": "CATEGORY II",
-    "Priority_Tier": 2,
-    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
-    "Job_Link": "https://jobs.dayforcehcm.com/en-US/down2earth/CANDIDATEPORTAL/jobs/4251",
     "Description": "Active landscaping & golf operations position with Down To Earth Landscaping.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -550,6 +535,21 @@
     "Priority_Tier": 2,
     "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
     "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c804bf4f-d461-4f38-861c-c50199110eeb&jobId=9202009649743_1",
+    "Description": "Active verified opening with Village Center Community Dev. District.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "UTILITY BILLING - CUSTOMER SERVICE REP.",
+    "Company": "Village Center Community Dev. District",
+    "Estimated_Salary": "Competitive / Direct Operating Benefits",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "Village of Lake Sumter Landing",
+    "Phone": "(352) 674-1905",
+    "Category": "CATEGORY II",
+    "Priority_Tier": 2,
+    "Priority_Label": "Category II (Subcontractor - 2nd Priority)",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c804bf4f-d461-4f38-861c-c50199110eeb&jobId=9202022633202_55",
     "Description": "Active verified opening with Village Center Community Dev. District.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -855,6 +855,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "Irrigation Specialist",
+    "Company": "City of Wildwood",
+    "Estimated_Salary": "Competitive / Public Retirement",
+    "Location": "The Villages / Sumter County, FL",
+    "Plaza_Location": "The Villages Commercial Area",
+    "Phone": "(352) 753-6655",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant)",
+    "Job_Link": "https://www.governmentjobs.com/careers/wildwoodfl/jobs/5552347/irrigation-specialist",
+    "Description": "Public sector position with City of Wildwood.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "Police Officer",
     "Company": "City of Wildwood",
     "Estimated_Salary": "Competitive / Public Retirement",
@@ -885,7 +900,22 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Clinical Team Support",
+    "Job_Title": "Technician Assistant - Wastewater",
+    "Company": "City of Wildwood",
+    "Estimated_Salary": "Competitive / Public Retirement",
+    "Location": "The Villages / Sumter County, FL",
+    "Plaza_Location": "The Villages Commercial Area",
+    "Phone": "(352) 753-6655",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant)",
+    "Job_Link": "https://www.governmentjobs.com/careers/wildwoodfl/jobs/5551996/technician-assistant-wastewater",
+    "Description": "Public sector position with City of Wildwood.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Clinical Care Coordinator, Home Health, RN, In-Office",
     "Company": "Concierge Homecare",
     "Estimated_Salary": "Competitive / Direct Operating Benefits",
     "Location": "The Villages, FL",
@@ -894,7 +924,7 @@
     "Category": "CATEGORY III",
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254868512_195",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258161221_118",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -910,6 +940,21 @@
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
     "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254838092_355",
+    "Description": "Active verified opening with Concierge Homecare.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Home Health Physical Therapist (PT) \u2013 Flexible Schedule",
+    "Company": "Concierge Homecare",
+    "Estimated_Salary": "Competitive / Direct Operating Benefits",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "Laurel Manor Professional Plaza",
+    "Phone": "(352) 435-0101",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258161221_81",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -945,7 +990,7 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Intake Portal Processor",
+    "Job_Title": "Licensed Practical Nurse, LPN, FT, Flexible Weekday Schedule",
     "Company": "Concierge Homecare",
     "Estimated_Salary": "Competitive / Direct Operating Benefits",
     "Location": "The Villages, FL",
@@ -954,13 +999,13 @@
     "Category": "CATEGORY III",
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254838102_442",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258160272_127",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Licensed Practical Nurse, LPN  *FLEXIBLE SCHEDULE*",
+    "Job_Title": "Licensed Practical Nurse, LPN, FT, Home Health",
     "Company": "Concierge Homecare",
     "Estimated_Salary": "Competitive / Direct Operating Benefits",
     "Location": "The Villages, FL",
@@ -969,7 +1014,7 @@
     "Category": "CATEGORY III",
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254838102_194",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258161221_154",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -1000,21 +1045,6 @@
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
     "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258161221_14",
-    "Description": "Active verified opening with Concierge Homecare.",
-    "Employment_Type": "Full-Time",
-    "TVCS_Qualifying": true
-  },
-  {
-    "Job_Title": "Occupational Therapist, OT, Flexible Weekday Schedule",
-    "Company": "Concierge Homecare",
-    "Estimated_Salary": "Competitive / Direct Operating Benefits",
-    "Location": "The Villages, FL",
-    "Plaza_Location": "Laurel Manor Professional Plaza",
-    "Phone": "(352) 435-0101",
-    "Category": "CATEGORY III",
-    "Priority_Tier": 3,
-    "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254868130_130",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -1110,6 +1140,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "Preceptor (RN) \u2013 Flexible Schedule",
+    "Company": "Concierge Homecare",
+    "Estimated_Salary": "Competitive / Direct Operating Benefits",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "Laurel Manor Professional Plaza",
+    "Phone": "(352) 435-0101",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258160272_66",
+    "Description": "Active verified opening with Concierge Homecare.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "Registered Nurse, RN, Flexible Weekday Schedule",
     "Company": "Concierge Homecare",
     "Estimated_Salary": "Competitive / Direct Operating Benefits",
@@ -1150,6 +1195,21 @@
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
     "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205254838092_300",
+    "Description": "Active verified opening with Concierge Homecare.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Speech Therapist, SLP, PRN Home Health",
+    "Company": "Concierge Homecare",
+    "Estimated_Salary": "Competitive / Direct Operating Benefits",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "Laurel Manor Professional Plaza",
+    "Phone": "(352) 435-0101",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
+    "Job_Link": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=ce2f2d73-4f05-4dc0-bee5-c701d2b36516&jobId=9205258160272_92",
     "Description": "Active verified opening with Concierge Homecare.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -1885,6 +1945,21 @@
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant)",
     "Job_Link": "https://recruiting.ultipro.com/SEA1007SEACO/JobBoard/7851737e-66c7-908f-77e9-6d69f4eb0ead/OpportunityDetail?opportunityId=865a52a2-7461-45f1-b2c0-1295e62912bd",
+    "Description": "Verified banking position with Seacoast National Bank.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Call Center Advisor",
+    "Company": "Seacoast National Bank",
+    "Estimated_Salary": "Competitive Banking Compensation",
+    "Location": null,
+    "Plaza_Location": "The Villages Commercial Area",
+    "Phone": "(352) 753-6655",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant)",
+    "Job_Link": "https://recruiting.ultipro.com/SEA1007SEACO/JobBoard/7851737e-66c7-908f-77e9-6d69f4eb0ead/OpportunityDetail?opportunityId=196739aa-2e55-446c-8b48-9e12cb156778",
     "Description": "Verified banking position with Seacoast National Bank.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -2760,6 +2835,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "Wealth Client Service Associate",
+    "Company": "Seacoast National Bank",
+    "Estimated_Salary": "Competitive Banking Compensation",
+    "Location": null,
+    "Plaza_Location": "The Villages Commercial Area",
+    "Phone": "(352) 753-6655",
+    "Category": "CATEGORY III",
+    "Priority_Tier": 3,
+    "Priority_Label": "Category III (Commercial Tenant)",
+    "Job_Link": "https://recruiting.ultipro.com/SEA1007SEACO/JobBoard/7851737e-66c7-908f-77e9-6d69f4eb0ead/OpportunityDetail?opportunityId=7e030ed2-486d-4212-b0b9-e7948a755ea4",
+    "Description": "Verified banking position with Seacoast National Bank.",
+    "Employment_Type": "Full-Time",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "Assistant Building Official",
     "Company": "Sumter County BOCC",
     "Estimated_Salary": "Competitive / Public Retirement",
@@ -2890,21 +2980,6 @@
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant)",
     "Job_Link": "https://humana.wd5.myworkdayjobs.com/humana/CenterWell_External_Career_Site/job/The-Villages-FL/Home-Health-Licensed-Practical-Nurse_R-435405",
-    "Description": "Verified position with The Villages Health / CenterWell.",
-    "Employment_Type": "Full-Time",
-    "TVCS_Qualifying": true
-  },
-  {
-    "Job_Title": "Home Health Occupational Therapist Assistant",
-    "Company": "The Villages Health / CenterWell",
-    "Estimated_Salary": "Competitive / Full Benefits",
-    "Location": "The Villages, FL",
-    "Plaza_Location": "The Villages Commercial Area",
-    "Phone": "(352) 753-6655",
-    "Category": "CATEGORY III",
-    "Priority_Tier": 3,
-    "Priority_Label": "Category III (Commercial Tenant)",
-    "Job_Link": "https://humana.wd5.myworkdayjobs.com/humana/CenterWell_External_Career_Site/job/The-Villages-FL/Home-Health-Occupational-Therapist-Assistant_R-424953",
     "Description": "Verified position with The Villages Health / CenterWell.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -3633,13 +3708,13 @@
     "Job_Title": "Host",
     "Company": "Toojay's - Lake Sumter Landing",
     "Estimated_Salary": "$15 - $25/hr or Salary (DOE)",
-    "Location": "Lake Sumter - The Villages",
+    "Location": "Brownwood - The Villages",
     "Plaza_Location": "Village of Lake Sumter Landing",
     "Phone": "(352) 430-0410",
     "Category": "CATEGORY III",
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://job-boards.greenhouse.io/toojaysdeli/jobs/4080954008",
+    "Job_Link": "https://job-boards.greenhouse.io/toojaysdeli/jobs/4080939008",
     "Description": "Active position with Toojay's - Lake Sumter Landing.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -3648,13 +3723,13 @@
     "Job_Title": "Host",
     "Company": "Toojay's - Lake Sumter Landing",
     "Estimated_Salary": "$15 - $25/hr or Salary (DOE)",
-    "Location": "Brownwood - The Villages",
+    "Location": "Lake Sumter - The Villages",
     "Plaza_Location": "Village of Lake Sumter Landing",
     "Phone": "(352) 430-0410",
     "Category": "CATEGORY III",
     "Priority_Tier": 3,
     "Priority_Label": "Category III (Commercial Tenant - 3rd Priority)",
-    "Job_Link": "https://job-boards.greenhouse.io/toojaysdeli/jobs/4080939008",
+    "Job_Link": "https://job-boards.greenhouse.io/toojaysdeli/jobs/4080954008",
     "Description": "Active position with Toojay's - Lake Sumter Landing.",
     "Employment_Type": "Full-Time",
     "TVCS_Qualifying": true
@@ -4000,6 +4075,21 @@
     "Priority_Tier": 4,
     "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71000/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Bio-Medical Technician | Full-Time",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71442/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
@@ -4545,6 +4635,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "Clinical Lab Tech Generalist SIGN-ON BONUS | Wildwood FSED  | Full-Time | Nights and Days available",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "The Villages, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/70765/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "Clinical Lab Tech Generalist | Eustis FSED Laboratory | PRN | Days",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -4695,21 +4800,6 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Clinical Lab Tech Generalist | Wildwood FSED  | Full-Time | Nights and Days available",
-    "Company": "UF Health (The Villages Hospital)",
-    "Estimated_Salary": "Competitive / Direct Benefits",
-    "Location": "The Villages, Florida",
-    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
-    "Phone": "(352) 323-4163",
-    "Category": "CATEGORY IV",
-    "Priority_Tier": 4,
-    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/70765/login",
-    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
-    "Employment_Type": "FULL_TIME",
-    "TVCS_Qualifying": true
-  },
-  {
     "Job_Title": "Clinical Lab Technologist  | Spanish Plaines Lab |  Part-time | Nights",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -4767,21 +4857,6 @@
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/67851/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "TEMPORARY",
-    "TVCS_Qualifying": true
-  },
-  {
-    "Job_Title": "Clinical Staff Pharmacist  | Emergency Medicine | FT Days",
-    "Company": "UF Health (The Villages Hospital)",
-    "Estimated_Salary": "Competitive / Direct Benefits",
-    "Location": "Leesburg, Florida",
-    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
-    "Phone": "(352) 323-4163",
-    "Category": "CATEGORY IV",
-    "Priority_Tier": 4,
-    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/62363/login",
-    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
-    "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
   },
   {
@@ -5064,9 +5139,24 @@
     "Category": "CATEGORY IV",
     "Priority_Tier": 4,
     "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/68063/login",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/68455/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
-    "Employment_Type": "TEMPORARY",
+    "Employment_Type": "PART_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "EVS Technician | Full-Time | 2:30PM-11:00PM",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71144/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
   },
   {
@@ -5115,6 +5205,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "EVS Technician | Part-Time",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71901/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "PART_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "EVS Technician | Part-Time | Eustis ER",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -5155,21 +5260,6 @@
     "Priority_Tier": 4,
     "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/69683/login",
-    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
-    "Employment_Type": "FULL_TIME",
-    "TVCS_Qualifying": true
-  },
-  {
-    "Job_Title": "Infection Prevention| Infection Control | Day | Full Time",
-    "Company": "UF Health (The Villages Hospital)",
-    "Estimated_Salary": "Competitive / Direct Benefits",
-    "Location": "The Villages, Florida",
-    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
-    "Phone": "(352) 323-4163",
-    "Category": "CATEGORY IV",
-    "Priority_Tier": 4,
-    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/64072/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
@@ -5410,6 +5500,21 @@
     "Priority_Tier": 4,
     "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/70929/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Manager, Talent Acquisition",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "The Villages, FL",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/72025/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
@@ -6060,6 +6165,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "Nursing Asst/US, Techretary | CFH CVU | Day Shift | Full Time",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71534/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "Nursing Asst/US, Techretary | Cardiac Medical Unit (CMU) |Full-Time | Day Shift",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -6282,6 +6402,51 @@
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/69181/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "PART_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Patient Access Representative | Patient Access | Full-Time | Vaiable",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "The Villages, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/71817/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Patient Access Representative | Patient Access | Full-Time | Variable",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/68352/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "Patient Access Representative | Patient Access | PRN | Variable",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/62739/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "TEMPORARY",
     "TVCS_Qualifying": true
   },
   {
@@ -6645,6 +6810,21 @@
     "TVCS_Qualifying": true
   },
   {
+    "Job_Title": "RN Charge Nurse SIGN ON BONUS | Wildwood FSED | Full Time | Nights",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "The Villages, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/68416/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
     "Job_Title": "RN Charge Nurse | Brownwood FSED | Full Time | Day Shift",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -6780,21 +6960,6 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "RN Charge Nurse | Wildwood FSED | Full Time | Nights",
-    "Company": "UF Health (The Villages Hospital)",
-    "Estimated_Salary": "Competitive / Direct Benefits",
-    "Location": "The Villages, Florida",
-    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
-    "Phone": "(352) 323-4163",
-    "Category": "CATEGORY IV",
-    "Priority_Tier": 4,
-    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
-    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/68416/login",
-    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
-    "Employment_Type": "FULL_TIME",
-    "TVCS_Qualifying": true
-  },
-  {
     "Job_Title": "RN | CVOR Leesburg | Full Time | Days",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
@@ -6820,6 +6985,21 @@
     "Priority_Tier": 4,
     "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
     "Job_Link": "https://jobs-ufhealth.icims.com/jobs/62799/login",
+    "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
+    "Employment_Type": "FULL_TIME",
+    "TVCS_Qualifying": true
+  },
+  {
+    "Job_Title": "RN, Chemo Nurse | Oncology | Full Time Days",
+    "Company": "UF Health (The Villages Hospital)",
+    "Estimated_Salary": "Competitive / Direct Benefits",
+    "Location": "Leesburg, Florida",
+    "Plaza_Location": "The Villages Regional Medical Center - West Campus",
+    "Phone": "(352) 323-4163",
+    "Category": "CATEGORY IV",
+    "Priority_Tier": 4,
+    "Priority_Label": "Category IV (Approved Vendor - 4th Priority)",
+    "Job_Link": "https://jobs-ufhealth.icims.com/jobs/70129/login",
     "Description": "Active verified healthcare requisition with UF Health (The Villages Hospital).",
     "Employment_Type": "FULL_TIME",
     "TVCS_Qualifying": true
@@ -7215,7 +7395,7 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Registered Nurse Full Time Nights",
+    "Job_Title": "Registered Nurse Full Time Nights Sign on Bonus",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
     "Location": "The Villages, Florida",
@@ -8400,7 +8580,7 @@
     "TVCS_Qualifying": true
   },
   {
-    "Job_Title": "Unit Secretary | Emergency Department | Full Time | Day Shift",
+    "Job_Title": "Unit Secretary | Emergency Department | Full Time | Night Shift",
     "Company": "UF Health (The Villages Hospital)",
     "Estimated_Salary": "Competitive / Direct Benefits",
     "Location": "The Villages, Florida",
